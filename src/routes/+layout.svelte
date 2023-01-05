@@ -7,7 +7,9 @@
     $nostrInstance.connect()
 </script>
 
-nosbin
+<div class="header">
+    <a id="name" href="/">nosbin</a>
+</div>
 <div class="container">
     <slot></slot>
 </div>
@@ -21,6 +23,13 @@ Made by <a href="https://jacany.com">Jack Chakany</a>; Get in contact: npub1s8gv
     }
     :global(a) {
         color: white;
+    }
+    .header {
+        display: flex;
+        margin: 20px 5vw
+    }
+    #name {
+        font-size: 1.5em;
     }
     .container {
         margin: 3vh 5vw;
