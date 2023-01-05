@@ -19,6 +19,9 @@ Made by <a href="https://jacany.com">Jack Chakany</a>; Get in contact: npub1s8gv
         background-color: #111111;
         color: white;
     }
+    :global(a) {
+        color: white;
+    }
     .container {
         margin: 3vh 5vw;
     }
