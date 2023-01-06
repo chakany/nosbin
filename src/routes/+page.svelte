@@ -27,6 +27,10 @@
     }
 </script>
 
+<svelte:head>
+    <meta name="description" content="The decentralized pasting platform" />
+</svelte:head>
+
 <h1>Welcome to nosbin</h1>
 <p>The decentralized pasting platform, built on <a href="https://usenostr.org">nostr</a></p>
 <b>⚠️THIS APP IS A WORK IN PROGRESS ⚠️</b>
