@@ -36,4 +36,5 @@
   {/if}
   {:else}
   <h2>Fetching...</h2>
+  If data doesn't load, try refreshing.
 {/if}
