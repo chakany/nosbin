@@ -28,7 +28,8 @@
 </script>
 
 <svelte:head>
-    <meta name="description" content="The decentralized pasting platform" />
+    <meta name="description" content="the decentralized pasting platform, built on nostr" />
+    <meta property="og:description" content="the decentralized pasting platform, built on nostr" />
 </svelte:head>
 
 <h1>Welcome to nosbin</h1>
