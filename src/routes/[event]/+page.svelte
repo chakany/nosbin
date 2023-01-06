@@ -20,6 +20,7 @@
     })
 </script>
 <svelte:head>
+  <title>paste {$page.params.event} - nosbin</title>
   <meta name="description" content="view this paste on nosbin, the decentralized pasting platform" />
   <meta property="og:description" content="view this paste on nosbin, the decentralized pasting platform" />
   <meta property="og:title" content="paste {$page.params.event}" />
