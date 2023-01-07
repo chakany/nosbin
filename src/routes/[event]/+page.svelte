@@ -11,8 +11,7 @@
     // fetch
     async function fetch() {
         console.debug($page.params.event)
-        const gevent = await $nostrInstance.getEvent($page.params.event)
-        event = gevent
+        event = await $nostrInstance.getEvent($page.params.event)
         hasData = true
     }
     // only used if client has already loaded.

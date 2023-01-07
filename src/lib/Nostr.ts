@@ -7,6 +7,7 @@ import {
     getEventHash,
     signEvent,
 } from 'nostr-tools'
+import { browser } from "$app/environment";
 import type { Relay, Event } from "nostr-tools"
 
 export default class Nostr {
@@ -15,8 +16,14 @@ export default class Nostr {
     public privkey: string;
     constructor() {
         this.relay = null;
-        this.pubkey = ""
-        this.privkey = ""
+        if (browser && localStorage.getItem("keys")) {
+            const keys = JSON.parse(localStorage.getItem("keys")!)
+            this.pubkey = keys[0]
+            this.privkey = keys[1]
+        } else {
+            this.pubkey = ""
+            this.privkey = ""
+        }
     }
 
     public async connect() {
@@ -34,12 +41,15 @@ export default class Nostr {
     public genKeys(): string[] {
         this.privkey = generatePrivateKey()
         this.pubkey = getPublicKey(this.privkey)
+        if (browser) localStorage.setItem("keys", JSON.stringify([this.pubkey, this.privkey]))
         return [this.pubkey, this.privkey]
     }
 
     public setKeys(pub: string, priv: string) {
         this.pubkey = pub;
         this.privkey = priv
+        // also save into localstorage
+        if (browser) localStorage.setItem("keys", JSON.stringify([this.pubkey, this.privkey]))
     }
 
     public async getEvent(id: string): Promise<Event | null> {
