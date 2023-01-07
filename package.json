@@ -34,6 +34,9 @@
 	"type": "module",
 	"dependencies": {
 		"@fontsource/montserrat": "^4.5.13",
+		"@fortawesome/fontawesome-svg-core": "^6.2.1",
+		"@fortawesome/free-solid-svg-icons": "^6.2.1",
+		"@fortawesome/svelte-fontawesome": "^0.2.0",
 		"nostr-tools": "^1.1.1",
 		"svelte-markdown": "^0.2.3"
 	}

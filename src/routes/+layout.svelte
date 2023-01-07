@@ -1,6 +1,11 @@
 <script>
     export const ssr = false;
     import "@fontsource/montserrat";
+    import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome'
+    import { faNoteSticky } from '@fortawesome/free-solid-svg-icons'
+    import { config } from '@fortawesome/fontawesome-svg-core'
+    import '@fortawesome/fontawesome-svg-core/styles.css' // Import the CSS
+    config.autoAddCss = false // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
 
     // init connection
     import { nostrInstance } from "$lib/store";
@@ -8,6 +13,7 @@
 </script>
 
 <div class="header">
+    <a href="/"><FontAwesomeIcon style="margin-right: 6px" size="2xl" icon={faNoteSticky} /></a>
     <a id="name" href="/">nosbin</a>
 </div>
 <div class="container">
