@@ -37,3 +37,4 @@
 </div>
 
 <Button style="margin-top: 15px" on:click={post}>Post</Button>
+<small>Make sure you inputted or generated your keys before attempting to post! Click the profile icon in the top right to get started.</small>

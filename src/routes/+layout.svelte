@@ -54,15 +54,16 @@
 
             <div class="flex column" style="gap: 10px;">
                 <div class="flex column" >
-                    Public Key
-                    <Textbox bind:value={pubkey} placeholder="npub..." />
+                    Public Key (Hex)
+                    <Textbox bind:value={pubkey} placeholder="3532..." />
                 </div>
                 <div class="flex column" >
-                    Private Key
-                    <Textbox bind:value={privkey} placeholder="nsec..." />
+                    Private Key (Hex)
+                    <Textbox bind:value={privkey} placeholder="9dc2..." />
                 </div>
                 <div class="flex" style="gap: 10px;">
                     <Button on:click={genKeys}>Generate</Button>
+                    <small class="align">nos2x soon.</small>
                 </div>
                 <small><i>
                     {#if pubkey && privkey == ""}
