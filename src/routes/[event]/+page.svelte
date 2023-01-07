@@ -10,11 +10,16 @@
 
     // fetch
     async function fetch() {
-        console.log($page.params.event)
+        console.debug($page.params.event)
         const gevent = await $nostrInstance.getEvent($page.params.event)
         event = gevent
         hasData = true
     }
+    // only used if client has already loaded.
+    if ($nostrInstance.relay.status == 1) {
+      fetch()
+    }
+    // used if client has not been loaded.
     $nostrInstance.relay.on("connect", () => {
         fetch()
     })
