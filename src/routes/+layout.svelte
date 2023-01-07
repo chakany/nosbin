@@ -38,7 +38,7 @@
         </a>
     </div>
     <div class="align flex" style="margin-left: auto; gap: 20px;">
-        <span class="align">18/20</span>
+        <span class="align"></span>
         <a class="align" href="https://github.com/jacany/nosbin"><FontAwesomeIcon size="xl" icon={faGithub} /></a>
         <div on:click={() => showKeyModal = true} class="align" style="cursor: pointer;">
             <FontAwesomeIcon size="xl" icon={faUser} />
