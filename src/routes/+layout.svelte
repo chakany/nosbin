@@ -15,8 +15,8 @@
 
     // init connection
     import { nostrInstance } from "$lib/store";
-    $: pubkey = $nostrInstance.pubkey
-    $: privkey = $nostrInstance.privkey
+    let pubkey = $nostrInstance.pubkey
+    let privkey = $nostrInstance.privkey
 
     function genKeys() {
         const keys = $nostrInstance.genKeys();
@@ -36,6 +36,8 @@
             <FontAwesomeIcon class="align" style="margin-right: 6px" size="2xl" icon={faNoteSticky} />
             <span class="align" id="name">nosbin</span>
         </a>
+        <!-- svelte-ignore missing-declaration -->
+        v{_version_}
     </div>
     <div class="align flex" style="margin-left: auto; gap: 20px;">
         <span class="align"></span>
@@ -54,12 +56,12 @@
 
             <div class="flex column" style="gap: 10px;">
                 <div class="flex column" >
-                    Public Key (Hex)
-                    <Textbox bind:value={pubkey} placeholder="3532..." />
+                    Public Key (npub, hex)
+                    <Textbox bind:value={pubkey} placeholder="npub..." />
                 </div>
                 <div class="flex column" >
-                    Private Key (Hex)
-                    <Textbox bind:value={privkey} placeholder="9dc2..." />
+                    Private Key (nsec, hex)
+                    <Textbox bind:value={privkey} placeholder="nsec..." />
                 </div>
                 <div class="flex" style="gap: 10px;">
                     <Button on:click={genKeys}>Generate</Button>

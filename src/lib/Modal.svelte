@@ -49,7 +49,7 @@
   <hr>
 
   <!-- svelte-ignore a11y-autofocus -->
-  <Button autofocus on:click={close}>Save</Button>
+  <Button on:click={close}>Save</Button>
 </div>
 
 <style>
@@ -74,9 +74,5 @@
         padding: 1em;
         border-radius: 0.2em;
         background: #1f1f1f;
-    }
-
-    button {
-        display: block;
     }
 </style>
