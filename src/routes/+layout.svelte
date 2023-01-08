@@ -56,12 +56,12 @@
 
             <div class="flex column" style="gap: 10px;">
                 <div class="flex column" >
-                    Public Key (npub, hex)
-                    <Textbox bind:value={pubkey} placeholder="npub..." />
+                    Public Key (hex)
+                    <Textbox bind:value={pubkey} placeholder="31g3..." />
                 </div>
                 <div class="flex column" >
-                    Private Key (nsec, hex)
-                    <Textbox bind:value={privkey} placeholder="nsec..." />
+                    Private Key (hex)
+                    <Textbox bind:value={privkey} placeholder="5fc3..." />
                 </div>
                 <div class="flex" style="gap: 10px;">
                     <Button on:click={genKeys}>Generate</Button>
