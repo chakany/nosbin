@@ -5,6 +5,8 @@ The decentralized pasting platform, built on nostr
 - [X] Markdown Support
 - [X] Use anonymous pubkey
 - [X] Use own pubkey
+  - [ ] bech32 support
+- [ ] Preview before posting
 - [ ] Comments
 - [ ] Reactions
 - [ ] Profiles
