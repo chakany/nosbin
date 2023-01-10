@@ -17,15 +17,24 @@
     import { nostrInstance } from "$lib/store";
     let pubkey = $nostrInstance.pubkey
     let privkey = $nostrInstance.privkey
+    let extension = $nostrInstance.extension
 
     function genKeys() {
         const keys = $nostrInstance.genKeys();
         console.log(keys)
         pubkey = keys[0];
         privkey = keys[1];
+        extension = false
+    }
+    async function getPubkeyFromExtension() {
+        console.debug('window.nostr not detected')
+        if (!window.nostr) return;
+        pubkey = await window.nostr.getPublicKey();
+        privkey = ""
+        extension = pubkey === "" ? false : true
     }
     function saveKeys() {
-        $nostrInstance.setKeys(pubkey, privkey)
+        $nostrInstance.setKeys(pubkey, privkey, extension)
     }
     $nostrInstance.connect()
 </script>
@@ -65,7 +74,7 @@
                 </div>
                 <div class="flex" style="gap: 10px;">
                     <Button on:click={genKeys}>Generate</Button>
-                    <small class="align">nos2x soon.</small>
+                    <Button on:click={getPubkeyFromExtension}>Use Extension</Button>
                 </div>
                 <small><i>
                     {#if pubkey && privkey == ""}

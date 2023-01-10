@@ -14,15 +14,18 @@ export default class Nostr {
     public relay: Relay | null
     public pubkey: string
     public privkey: string;
+    public extension: boolean;
     constructor() {
         this.relay = null;
         if (browser && localStorage.getItem("keys")) {
             const keys = JSON.parse(localStorage.getItem("keys")!)
             this.pubkey = keys[0]
             this.privkey = keys[1]
+            this.extension = keys[2]
         } else {
             this.pubkey = ""
             this.privkey = ""
+            this.extension = false
         }
     }
 
@@ -45,11 +48,12 @@ export default class Nostr {
         return [this.pubkey, this.privkey]
     }
 
-    public setKeys(pub: string, priv: string) {
+    public setKeys(pub: string, priv: string, extension: boolean) {
         this.pubkey = pub;
         this.privkey = priv
+        this.extension = extension
         // also save into localstorage
-        if (browser) localStorage.setItem("keys", JSON.stringify([this.pubkey, this.privkey]))
+        if (browser) localStorage.setItem("keys", JSON.stringify([this.pubkey, this.privkey, extension]))
     }
 
     public async getEvent(id: string): Promise<Event | null> {
@@ -82,7 +86,15 @@ export default class Nostr {
             content: content
         }
         event.id = getEventHash(event)
-        event.sig = signEvent(event, this.privkey)
+        // @ts-ignore might exist we don't know
+        if (browser && window.nostr && this.privkey == "" && this.extension) {
+            // assume that we are using nostr extension
+            // @ts-ignore
+            event = await window.nostr.signEvent(event)
+            console.debug(event)
+        } else {
+            event.sig = signEvent(event, this.privkey)
+        }
 
         let pub = this.relay!.publish(event)
         pub.on('ok', () => {

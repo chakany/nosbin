@@ -15,7 +15,7 @@
         hasData = true
     }
     // only used if client has already loaded.
-    if ($nostrInstance.relay.status == 1) {
+    if ($nostrInstance.relay.status === 1) {
       fetch()
     }
     // used if client has not been loaded.
