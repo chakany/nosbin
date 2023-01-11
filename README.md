@@ -13,3 +13,4 @@ The decentralized pasting platform, built on nostr
 - [ ] Profiles
 - [ ] Search
 - [ ] Posting to multiple Relays
+- [ ] Lightning Tips
