@@ -17,4 +17,4 @@ jobs:
           relay: wss://nostr.chaker.net
           content: |
             ${{ github.actor }} pushed ${{ github.event.commits.length }} commits to branch ${{ github.ref_name }}
-            https://github.com/${{ github.repository }}/commits/${{ github.ref_name }}
+            https://github.com/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.event.after }}
