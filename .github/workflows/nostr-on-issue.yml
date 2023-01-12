@@ -1,0 +1,22 @@
+
+name: Send nostr Event on Issue
+
+on:
+  issues:
+    types: [opened, closed, reopened]
+
+jobs:
+  units:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Publish to nostr
+        uses: theborakompanioni/nostr-action@v1
+        with:
+          key: ${{ secrets.NOSTR_KEY }}
+          relay: wss://nostr.chaker.net
+          content: |
+            Issue ${{ github.event.action }}
+
+            ${{ github.actor }} ${{ github.event.action }} issue #${{ github.event.issue.number }}
