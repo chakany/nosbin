@@ -58,6 +58,7 @@
 </script>
 
 <div class="header">
+    <!--suppress JSUnresolvedVariable -->
     <div class="align">
         <a style="text-decoration: none;" href="/">
             <FontAwesomeIcon class="align" style="margin-right: 6px" size="2xl" icon={faNoteSticky} />
