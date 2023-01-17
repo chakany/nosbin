@@ -20,12 +20,15 @@
     import Textbox from "$lib/Textbox.svelte";
     import Button from "$lib/Button.svelte";
     import Modal from "$lib/Modal.svelte"
+    import {relayInit} from "nostr-tools";
+
     let showKeyModal = false;
+    let showRelayModal = false;
 
     export const ssr = false;
     import "@fontsource/montserrat";
     import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome'
-    import { faNoteSticky, faUser } from '@fortawesome/free-solid-svg-icons'
+    import { faNoteSticky, faUser, faServer, faXmark } from '@fortawesome/free-solid-svg-icons'
     import { faGithub } from "@fortawesome/free-brands-svg-icons";
     import { config } from '@fortawesome/fontawesome-svg-core'
     import '@fortawesome/fontawesome-svg-core/styles.css' // Import the CSS
@@ -54,7 +57,56 @@
     function saveKeys() {
         $nostrInstance.setKeys(pubkey, privkey, extension)
     }
-    $nostrInstance.connect()
+
+    let relays = $nostrInstance.relays
+    let relayField = ""
+    $nostrInstance.relays.forEach(async (relay) => {
+        connect(relay)
+    })
+
+    async function connect(relay) {
+        try {
+            await relay.connect()
+        } catch (err) {
+            relays = $nostrInstance.relays
+        }
+
+        relay.on("connect", () => {
+            relays = $nostrInstance.relays
+            console.debug(`Connected to ${relay.url}`)
+        })
+        relay.on("error", (error) => {
+            relays = $nostrInstance.relays
+            console.error(error)
+        })
+        relay.on("disconnect", () => {
+            relays = $nostrInstance.relays
+            console.debug(`Disconnected from ${relay.url}`)
+        })
+    }
+
+    async function addRelay() {
+        // publish nostr event adding relay
+        try {
+            new URL(relayField)
+        } catch {
+            return
+        }
+        const relay = relayInit(relayField)
+        $nostrInstance.relays.push(relay)
+        connect(relay)
+        relays = $nostrInstance.relays
+        console.debug(`Added ${relay.url} to relay list`)
+    }
+
+    async function removeRelay(relay) {
+        // publish nostr event removing relay
+        const i = $nostrInstance.relays.indexOf(relay)
+        if ($nostrInstance.relays[i].status === 1) await $nostrInstance.relays[i].close()
+        $nostrInstance.relays.splice(i, 1)
+        relays = $nostrInstance.relays
+        console.debug(`Removed ${relay.url} from relay list`)
+    }
 </script>
 
 <div class="header">
@@ -70,6 +122,12 @@
     <div class="align flex" style="margin-left: auto; gap: 20px;">
         <span class="align"></span>
         <a class="align" href="https://github.com/jacany/nosbin"><FontAwesomeIcon size="xl" icon={faGithub} /></a>
+        <div class="flex align" style="gap: 8px">
+            <span class="align">{relays.filter((relay) => relay.status === 1).length}/{relays.length}</span>
+            <div on:click={() => showRelayModal = true} class="align" style="cursor: pointer;">
+                <FontAwesomeIcon size="xl" icon={faServer} />
+            </div>
+        </div>
         <div on:click={() => showKeyModal = true} class="align" style="cursor: pointer;">
             <FontAwesomeIcon size="xl" icon={faUser} />
         </div>
@@ -102,6 +160,36 @@
                         Events will be signed automatically using the stored private key
                     {/if}
                 </i></small>
+            </div>
+        </Modal>
+        {:else if showRelayModal}
+        <Modal on:close="{() => {showRelayModal = false}}">
+            <h2 slot="header">
+                Manage Relays
+            </h2>
+
+            <div class="flex column" style="gap: 10px;">
+                {#each relays as relay}
+                    <div class="flex">
+                        <div class="align" style="margin-right: auto">
+                            {#if relay.status === 0 || relay.status === 2}
+                                ⚠️
+                            {:else if relay.status === 1}
+                                ✅
+                            {:else if relay.status === 3}
+                                ❌
+                            {:else}
+                                ❌
+                            {/if}
+                            {relay.url}
+                        </div>
+                        <Button class="align" on:click={() => removeRelay(relay)}>Remove</Button>
+                    </div>
+                    {/each}
+                <div class="flex" style="gap: 15px">
+                    <Textbox bind:value={relayField} placeholder="wss://"></Textbox>
+                    <Button on:click={addRelay}>Add</Button>
+                </div>
             </div>
         </Modal>
         {/if}

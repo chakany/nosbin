@@ -27,14 +27,17 @@ import {
 } from 'nostr-tools'
 import { browser } from "$app/environment";
 import type { Relay, Event } from "nostr-tools"
-
+import {createEventDispatcher} from "svelte";
 export default class Nostr {
-    public relay: Relay | null
+    public relays: Relay[]
     public pubkey: string
     public privkey: string;
     public extension: boolean;
     constructor() {
-        this.relay = null;
+        this.relays = [];
+        this.relays[0] = relayInit('wss://nostr.chaker.net');
+        this.relays[1] = relayInit('wss://relay.damus.io');
+        this.relays[2] = relayInit('wss://nostr.oxtr.dev');
         if (browser && localStorage.getItem("keys")) {
             const keys = JSON.parse(localStorage.getItem("keys")!)
             this.pubkey = keys[0]
@@ -45,18 +48,6 @@ export default class Nostr {
             this.privkey = ""
             this.extension = false
         }
-    }
-
-    public async connect() {
-        this.relay = relayInit('wss://nostr.chaker.net')
-        await this.relay.connect()
-
-        this.relay.on('connect', () => {
-            console.log(`connected to ${this.relay!.url}`)
-        })
-        this.relay.on('error', () => {
-            console.log(`failed to connect to ${this.relay!.url}`)
-        })
     }
 
     public genKeys(): string[] {
@@ -76,13 +67,13 @@ export default class Nostr {
 
     public async getEvent(id: string): Promise<Event | null> {
         return new Promise<Event |null>((resolve) => {
-            let sub = this.relay!.sub([
+            let sub = this.relays[0].sub([
                 {
                     ids: [id]
                 }
             ])
             sub.on('event', (event: Event) => {
-                console.log('we got the event we wanted:', event)
+                console.debug('we got the event we wanted:', event)
                 resolve(event)
             })
             sub.on('eose', () => {
@@ -114,16 +105,18 @@ export default class Nostr {
             event.sig = signEvent(event, this.privkey)
         }
 
-        let pub = this.relay!.publish(event)
-        pub.on('ok', () => {
-            console.debug(`${this.relay?.url} has accepted our event`)
-        })
-        pub.on('seen', () => {
-            console.debug(`we saw the event on ${this.relay?.url}`)
-        })
-        pub.on('failed', (reason: any) => {
-            console.error(`failed to publish to ${this.relay?.url}: ${reason}`)
-        })
+        for (let relay of this.relays) {
+            let pub = relay.publish(event)
+            pub.on('ok', () => {
+                console.debug(`${relay.url} has accepted our event`)
+            })
+            pub.on('seen', () => {
+                console.debug(`we saw the event on ${relay?.url}`)
+            })
+            pub.on('failed', (reason: any) => {
+                console.error(`failed to publish to ${relay.url}: ${reason}`)
+            })
+        }
         return event.id
     }
 }

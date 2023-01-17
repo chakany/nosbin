@@ -29,8 +29,6 @@
     let filename;
     let mode = "edit";
 
-    $: relay = $nostrInstance.relay.url
-
     async function post() {
         if ($nostrInstance.pubkey === "" || !content || !filename) return;
         const id = await $nostrInstance.postFile(filename, content)
@@ -52,7 +50,6 @@
 <h1>Welcome to nosbin</h1>
 <p>The decentralized pasting platform, built on <a href="https://usenostr.org">nostr</a></p>
 <b>⚠️THIS APP IS A WORK IN PROGRESS ⚠️</b>
-<p>Current Relay: {relay}</p>
 
 <div style="display: flex; flex-direction: column">
     <div id="editbox" style="display: flex; flex-direction: column">

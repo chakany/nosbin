@@ -32,12 +32,14 @@
         event = await $nostrInstance.getEvent($page.params.event)
         hasData = true
     }
+    // TODO: FIX
     // only used if client has already loaded.
-    if ($nostrInstance.relay.status === 1) {
+    if ($nostrInstance.relays[0].status === 1) {
       fetch()
     }
+    // TODO: FIX
     // used if client has not been loaded.
-    $nostrInstance.relay.on("connect", () => {
+    $nostrInstance.relays[0].on("connect", () => {
         fetch()
     })
 </script>

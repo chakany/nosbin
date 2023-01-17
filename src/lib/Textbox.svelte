@@ -18,12 +18,13 @@
 
 <script>
     export let value = ""
+    let disabled = false;
 </script>
 
 {#if $$props.type === "textarea"}
     <textarea bind:value class="input" style={$$props.style} placeholder={$$props.placeholder}></textarea>
 {:else}
-    <input bind:value class="input" type="text" style={$$props.style} placeholder={$$props.placeholder} />
+    <input bind:value class="input" type="text" disabled={disabled} style={$$props.style} placeholder={$$props.placeholder} />
 {/if}
 <style>
     .input {
