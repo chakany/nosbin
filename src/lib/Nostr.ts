@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Nostr Init
 import "websocket-polyfill"
 import {
     relayInit,
@@ -24,10 +23,130 @@ import {
     getPublicKey,
     getEventHash,
     signEvent,
+    nip19
 } from 'nostr-tools'
 import { browser } from "$app/environment";
-import type { Relay, Event } from "nostr-tools"
-import {createEventDispatcher} from "svelte";
+import type { Relay, Event, Sub } from "nostr-tools"
+import Logger from "$lib/Logger"
+
+export class NewNostr {
+    public relays: Map<string, Relay>
+    public subs: Map<string, Sub>
+    private _pubkey: string
+    private _privkey: string
+    private _log: Logger
+
+    constructor() {
+        this.relays = new Map()
+        this.subs = new Map()
+        if (browser) {
+            let storedKeys = JSON.parse(localStorage.getItem("keys"))
+            this._pubkey = storedKeys[0]
+            this._privkey = storedKeys[1]
+        } else {
+            this._pubkey = ""
+            this._privkey = ""
+        }
+        this._log = new Logger("nostr")
+        this.addRelay(`wss://nostr.chaker.net`)
+        this.addRelay(`wss://relay.damus.io`)
+    }
+
+    //
+    // Key Management
+    //
+
+    public get pubkey(): string {
+        if (!this._pubkey) return ""
+        return nip19.npubEncode(this._pubkey)
+    }
+    public set pubkey(input: string) {
+        let key: string = input
+        if(input.startsWith("npub")) {
+            try {
+                key = nip19.decode(input)
+            } catch (error) {
+                return new Error("Failed to decode npub")
+            }
+        }
+
+        this._pubkey = key
+        if (browser) localStorage.setItem("keys", JSON.stringify([key, this._privkey]))
+    }
+    public get privkey(): string {
+        if (!this._privkey) return ""
+        return nip19.nsecEncode(this._privkey)
+    }
+    public set privkey(input: string) {
+        let key: string = input
+        if(input.startsWith("nsec")) {
+            try {
+                key = nip19.decode(input)
+            } catch (error) {
+                return new Error("Failed to decode nsec")
+            }
+        }
+
+        this._privkey = key
+        if (browser) localStorage.setItem("keys", JSON.stringify([this._pubkey, key]))
+    }
+
+    public generateKeys(): string[] {
+        let genPriv = generatePrivateKey()
+        this.privkey = genPriv;
+        this.pubkey = getPublicKey(genPriv)
+        return [this.pubkey, this.privkey]
+    }
+
+    public async getPubkeyFromExtension(): Promise<string> {
+        if (!window.nostr) return
+        this.pubkey = await window.nostr.getPublicKey();
+        return this.pubkey
+    }
+
+    //
+    // Relay Management
+    //
+
+    public async connectAll() {
+        for (let [_, relay] of this.relays) {
+            this._bindToRelayEmitters(relay)
+            relay.connect()
+        }
+    }
+
+    public connectOne(relayUrl: string): Relay {
+        const relay = this.relays.get(relayUrl)
+        this._bindToRelayEmitters(relay)
+        relay.connect()
+        return relay
+    }
+
+    private _bindToRelayEmitters(relay: Relay) {
+        relay.on("connect", () => {
+            this._log.debug(`Connected to ${relay.url}`)
+        })
+        relay.on("error", (error) => {
+            this._log.error(error)
+        })
+        relay.on("disconnect", () => {
+            this._log.debug(`Disconnected from ${relay.url}`)
+        })
+    }
+
+    public disconnectOne(relayUrl: string): Promise<void> {
+        const relay = this.relays.get(relayUrl)
+        return relay.close()
+    }
+
+    public addRelay(relayUrl: string): Map<string, Relay> {
+        return this.relays.set(relayUrl, relayInit(relayUrl));
+    }
+
+    public removeRelay(relayUrl: string) {
+        this.relays.delete(relayUrl)
+    }
+}
 export default class Nostr {
     public relays: Relay[]
     public pubkey: string

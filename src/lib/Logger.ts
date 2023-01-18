@@ -1,5 +1,5 @@
 /*
- * store.ts
+ * Logger.ts
  * Copyright (c) 2023 Jack Chakany <jacany@chaker.net>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {writable} from "svelte/store";
-import Nostr, {NewNostr} from "$lib/Nostr"
-export const nostrInstance = writable(new Nostr())
-export const nostr = writable(new NewNostr())
+export default class Logger {
+  public name: string
+  constructor(name: string) {
+    this.name = name
+  }
+
+  public debug(...data) {
+    console.debug(`[${this.name}] ` + data)
+  }
+
+  public error(...data) {
+    console.error(`[${this.name}] ` + data)
+  }
+}
