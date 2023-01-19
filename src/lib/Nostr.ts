@@ -24,9 +24,9 @@ import {
     getPublicKey,
     getEventHash,
     signEvent,
-} from 'nostr-tools'
+} from 'nostr-tools/index'
 import { browser } from "$app/environment";
-import type { Relay, Event } from "nostr-tools"
+import type { Relay, Event } from "nostr-tools/index"
 
 export default class Nostr {
     public relay: Relay | null

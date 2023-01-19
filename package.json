@@ -38,7 +38,7 @@
 		"@fortawesome/free-brands-svg-icons": "^6.2.1",
 		"@fortawesome/free-solid-svg-icons": "^6.2.1",
 		"@fortawesome/svelte-fontawesome": "^0.2.0",
-		"nostr-tools": "^1.1.1",
+		"nostr-tools": "git+https://github.com/nbd-wtf/nostr-tools.git#cb05ee188f18e13f5c93b0c1ca40afb482e12b10",
 		"svelte-markdown": "^0.2.3"
 	}
 }
