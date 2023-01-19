@@ -17,7 +17,7 @@
   -->
 
 <script>
-    import { nostrInstance } from "$lib/store";
+    import { nostr } from "$lib/store";
     import { page } from "$app/stores";
     import { HighlightAuto, LineNumbers } from "svelte-highlight";
     import SvelteMarkdown from "svelte-markdown";
@@ -29,19 +29,12 @@
     // fetch
     async function fetch() {
         console.debug($page.params.event)
-        event = await $nostrInstance.getEvent($page.params.event)
+        event = await $nostr.getEvent({
+          ids: [$page.params.event],
+          kinds: [1050],
+        })
         hasData = true
     }
-    // TODO: FIX
-    // only used if client has already loaded.
-    if ($nostrInstance.relays[0].status === 1) {
-      fetch()
-    }
-    // TODO: FIX
-    // used if client has not been loaded.
-    $nostrInstance.relays[0].on("connect", () => {
-        fetch()
-    })
 </script>
 <svelte:head>
   <title>paste {$page.params.event} - nosbin</title>
@@ -65,4 +58,5 @@
   {:else}
   <h2>Fetching...</h2>
   If data doesn't load, try refreshing.
+  <button on:click={fetch}>Fetch</button>
 {/if}

@@ -39,7 +39,7 @@
   let inputtedPrivkey = $nostr.privkey
 
   let relayField = "";
-  $nostr.connectOne(`wss://nostr.chaker.net`);
+  $nostr.connectAll()
 </script>
 
 <div class="header">

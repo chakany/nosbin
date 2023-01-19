@@ -20,7 +20,7 @@
   import Textbox from "$lib/Textbox.svelte";
   import Button from "$lib/Button.svelte";
   import { goto } from "$app/navigation";
-  import { nostrInstance } from "$lib/store";
+  import { nostr } from "$lib/store";
   import { HighlightAuto, LineNumbers } from "svelte-highlight";
   import SvelteMarkdown from "svelte-markdown";
   import github from "svelte-highlight/styles/github-dark";
@@ -30,8 +30,14 @@
   let mode = "edit";
 
   async function post() {
-    if ($nostrInstance.pubkey === "" || !content || !filename) return;
-    const id = await $nostrInstance.postFile(filename, content);
+    if ($nostr.pubkey === "" || !content || !filename) return;
+    const id = await $nostr.postNewEvent({
+		kind: 1050,
+		tags: [
+			["filename", filename]
+		],
+		content: content
+	})
     console.log(id);
     if (id) {
       await goto(`/${id}`, { replaceState: false });

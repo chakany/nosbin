@@ -31,7 +31,7 @@ import Logger from "$lib/Logger"
 
 export class NewNostr {
     public relays: Map<string, Relay>
-    public subs: Map<string, Sub>
+    public subs: Map<string, Map<string, Sub>>
     private _pubkey: string
     private _privkey: string
     private _log: Logger
@@ -50,6 +50,9 @@ export class NewNostr {
         this._log = new Logger("nostr")
         this.addRelay(`wss://nostr.chaker.net`)
         this.addRelay(`wss://relay.damus.io`)
+        this.addRelay("wss://nostr.fmt.wiz.biz")
+        this.addRelay("wss://nostr.oxtr.dev")
+        this.addRelay("wss://nostr.v0l.io")
     }
 
     //
@@ -146,7 +149,80 @@ export class NewNostr {
     public removeRelay(relayUrl: string) {
         this.relays.delete(relayUrl)
     }
+
+    //
+    // Event Management
+    //
+    public async postNewEvent(ev: Event): Promise<string> {
+        let event: Event = {
+            ...ev,
+            pubkey: this._pubkey,
+            created_at: Math.floor(Date.now() / 1000),
+        }
+        event.tags.push(["client", "nosbin"])
+        event.id = getEventHash(event)
+        // @ts-ignore might exist we don't know
+        if (browser && window.nostr && this._privkey == "" && this.extension) {
+            // assume that we are using nostr extension
+            // @ts-ignore
+            event = await window.nostr.signEvent(event)
+            console.debug(event)
+        } else {
+            event.sig = signEvent(event, this._privkey)
+        }
+        await this._broadcastToAll(event)
+
+        return event.id!
+    }
+
+    private async _broadcastToAll(event: Event): Promise<void> {
+        const allRelays = [...this.relays].map(([_, relay]) => relay)
+        const connectedRelays = allRelays.filter((relay) => relay.status === 1)
+        for (let relay of connectedRelays) {
+            let pub = await relay.publish(event)
+            pub.on('ok', () => {
+                console.debug(`${relay.url} has accepted our event`)
+            })
+            pub.on('seen', () => {
+                console.debug(`we saw the event on ${relay.url}`)
+            })
+            pub.on('failed', (reason: any) => {
+                console.error(`failed to publish to ${relay.url}: ${reason}`)
+            })
+        }
+
+        return
+    }
+
+    public getEvent(filter): Promise<Event> {
+        return new Promise<Event>((resolve) => {
+            const subMapName = filter.ids[0] ? filter.ids[0] : filter.kind
+            this.subs.set(subMapName, new Map())
+            let subMap = this.subs.get(subMapName)
+            const gotEvent = (event) => {
+                for (let [_, sub] of subMap) {
+                    sub.unsub();
+                }
+                this.subs.delete(subMapName)
+                resolve(event)
+            }
+            for (let [_, relay] of this.relays) {
+                if (relay.status !== 1) break
+
+                let sub = relay.sub([filter])
+                subMap.set(relay.url, sub)
+                sub.on('event', (event: Event) => {
+                    console.debug('got event from ' + relay.url)
+                    gotEvent(event)
+                })
+                sub.on('eose', () => {
+                    sub.unsub()
+                })
+            }
+        })
+    }
 }
+
 export default class Nostr {
     public relays: Relay[]
     public pubkey: string
@@ -236,6 +312,7 @@ export default class Nostr {
                 console.error(`failed to publish to ${relay.url}: ${reason}`)
             })
         }
+
         return event.id
     }
 }
