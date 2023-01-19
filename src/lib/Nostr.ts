@@ -41,8 +41,8 @@ export class NewNostr {
         this.subs = new Map()
         if (browser) {
             let storedKeys = JSON.parse(localStorage.getItem("keys"))
-            this._pubkey = storedKeys[0]
-            this._privkey = storedKeys[1]
+            this._pubkey = storedKeys ? storedKeys[0] : ""
+            this._privkey = storedKeys ? storedKeys[1] : ""
         } else {
             this._pubkey = ""
             this._privkey = ""
