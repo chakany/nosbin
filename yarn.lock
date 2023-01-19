@@ -1258,10 +1258,10 @@ normalize-path@^3.0.0, normalize-path@~3.0.0:
   resolved "https://registry.yarnpkg.com/normalize-path/-/normalize-path-3.0.0.tgz#0dcd69ff23a1c9b11fd0978316644a0388216a65"
   integrity sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==
 
-nostr-tools@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/nostr-tools/-/nostr-tools-1.1.1.tgz#2be4cd650bc0a4d20650b6cf46fee451c9f565b8"
-  integrity sha512-mxgjbHR6nx2ACBNa2tBpeM/glsPWqxHPT1Kszx/XfzL+kUdi1Gm3Xz1UcaODQ2F84IFtCKNLO+aF31ZfTAhSYQ==
+nostr-tools@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/nostr-tools/-/nostr-tools-1.1.0.tgz#f7c06a1d1a1a71b7b1feb7b0e687cef6a4e24286"
+  integrity sha512-T+Fj29ff6dn1YMMDrG03OctxrWVKeei/DZatVjgoad0tYUCiBBERk37qkpCqFAoKYVreIPl/Mxrh2DVfMzLA7g==
   dependencies:
     "@noble/hashes" "^0.5.7"
     "@noble/secp256k1" "^1.7.0"
