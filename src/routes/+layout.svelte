@@ -104,7 +104,7 @@
 	  </h2>
 
 	  <div class="flex column" style="gap: 10px;">
-		{#each [...$nostr.relays].map(([name, value]) => (value)) as relay}
+		{#each [...$nostr.relays].map(([_, value]) => (value)) as relay}
 		  <div class="flex">
 			<div class="align" style="margin-right: auto">
 			  {#if relay.status === 0 || relay.status === 2}
@@ -118,7 +118,7 @@
 			  {/if}
 			  {relay.url}
 			</div>
-			<Button class="align" on:click={() => $nostr.removeRelay(relay.url)}>Remove</Button>
+			<Button class="align" on:click={async () =>{ await $nostr.disconnectOne(relay.url); $nostr.removeRelay(relay.url) }}>Remove</Button>
 		  </div>
 		{/each}
 		<div class="flex" style="gap: 15px">
