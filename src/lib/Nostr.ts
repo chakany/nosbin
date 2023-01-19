@@ -114,14 +114,22 @@ export class NewNostr {
     public async connectAll() {
         for (let [_, relay] of this.relays) {
             this._bindToRelayEmitters(relay)
-            relay.connect()
+            try {
+                relay.connect()
+            } catch (err) {
+                console.error(`unable to connect to ${relay.url}: ` + err)
+            }
         }
     }
 
     public connectOne(relayUrl: string): Relay {
         const relay = this.relays.get(relayUrl)
         this._bindToRelayEmitters(relay)
-        relay.connect()
+        try {
+            relay.connect()
+        } catch (err) {
+            console.error(`unable to connect to ${relay.url}: ` + err)
+        }
         return relay
     }
 
