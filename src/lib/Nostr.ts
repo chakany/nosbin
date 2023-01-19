@@ -26,7 +26,7 @@ import {
     nip19
 } from 'nostr-tools/index'
 import { browser } from "$app/environment";
-import type { Relay, Event, Sub } from "nostr-tools"
+import type { Relay, Event, Sub } from "nostr-tools/index"
 import Logger from "$lib/Logger"
 
 export class NewNostr {
