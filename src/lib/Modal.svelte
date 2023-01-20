@@ -60,7 +60,7 @@
 
 <div class="modal-background" on:click={close}></div>
 
-<div class="modal" role="dialog" aria-modal="true" bind:this={modal}>
+<div class="modaltest" role="dialog" aria-modal="true" bind:this={modal}>
   <slot name="header"></slot>
   <hr>
   <slot></slot>
@@ -80,7 +80,7 @@
         background: rgba(0,0,0,0.3);
     }
 
-    .modal {
+    .modaltest {
         position: absolute;
         left: 50%;
         top: 50%;
