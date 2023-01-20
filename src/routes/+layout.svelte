@@ -23,11 +23,12 @@
 
   let showKeyModal = false;
   let showRelayModal = false;
+	let connecting = true;
 
   export const ssr = false;
   import "@fontsource/montserrat";
   import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
-  import { faNoteSticky, faUser, faServer, faXmark } from "@fortawesome/free-solid-svg-icons";
+  import { faNoteSticky, faUser, faServer } from "@fortawesome/free-solid-svg-icons";
   import { faGithub } from "@fortawesome/free-brands-svg-icons";
   import { config } from "@fortawesome/fontawesome-svg-core";
   import "@fortawesome/fontawesome-svg-core/styles.css"; // Import the CSS
@@ -57,11 +58,13 @@
 	<a class="align" href="https://github.com/jacany/nosbin">
 	  <FontAwesomeIcon size="xl" icon={faGithub} />
 	</a>
-	<div class="flex align" style="gap: 8px">
-	  <span class="align">?/{$nostr.relays.size}</span>
-	  <div on:click={() => showRelayModal = true} class="align" style="cursor: pointer;">
-		<FontAwesomeIcon size="xl" icon={faServer} />
-	  </div>
+		<!-- TODO: make dynamic, i want to work on purely UI -->
+	<div on:click={() => {showRelayModal = true; connecting = !connecting}} class="align" style="cursor: pointer;">
+		{#if connecting}
+			<FontAwesomeIcon size="xl" fade={true} style="color: yellow" icon={faServer} />
+			{:else}
+			<FontAwesomeIcon size="xl" fade={false} style="color: green;" icon={faServer} />
+			{/if}
 	</div>
 	<div on:click={() => showKeyModal = true} class="align" style="cursor: pointer;">
 	  <FontAwesomeIcon size="xl" icon={faUser} />
