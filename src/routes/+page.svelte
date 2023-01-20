@@ -24,6 +24,7 @@
     import { HighlightAuto, LineNumbers } from "svelte-highlight";
     import SvelteMarkdown from "svelte-markdown";
     import github from "svelte-highlight/styles/github-dark";
+    import { KeyModal } from "$lib/ModalController";
 
     let content;
     let filename;
@@ -32,7 +33,16 @@
     $: relay = $nostrInstance.relay.url
 
     async function post() {
-        if ($nostrInstance.pubkey === "" || !content || !filename) return;
+        if (!filename) {
+            alert("You must add a filename!");
+            return;
+        } else if (!content) {
+            alert("You must add content to post!");
+            return;
+        } else if ($nostrInstance.pubkey === "") {
+            $KeyModal = true;
+            return;
+        }
         const id = await $nostrInstance.postFile(filename, content)
         console.log(id)
         if (id) {
@@ -78,7 +88,6 @@
         {/if}
     </div>
 </div>
-
 <Button style="margin-top: 15px" on:click={post}>Post</Button>
 <small>Make sure you inputted or generated your keys before attempting to post! Click the profile icon in the top right to get started.</small>
 
