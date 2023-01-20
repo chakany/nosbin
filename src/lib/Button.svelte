@@ -16,24 +16,27 @@
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<button on:click><slot></slot></button>
+<button on:click>
+  <slot></slot>
+</button>
 
 <style>
     button {
-        background: none;
-        color: white;
-        border-radius: 6px;
+        background-color: white;
+        color: black;
+        border-radius: 4px;
         border-style: solid;
-        border-color: #bbbbbb;
-        border-width: thin;
+        border-width: 1px;
         cursor: pointer;
-        width:85px;
-        height: 35px;
-        transition: border-color 0.2s;
+        width: 8rem;
+        font-size: 1.5em;
+        padding: 0.2em 0;
+        transition: background-color 0.15s, color 0.15s;
     }
     button:hover {
-        transition: border-color 0.2s;
-        border-color: white;
+        transition: background-color 0.2s, color 0.2s;
+        background-color: black;
+        color: white;
         outline: none;
     }
 </style>
