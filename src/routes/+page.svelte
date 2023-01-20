@@ -69,13 +69,15 @@
         </div>
         {#if previewMode}
             {#if filename.endsWith(".md")}
-                <div style="margin: 1vh 2vw">
+                <div style="margin: 1vh 2vw; height: 50vh">
                     <SvelteMarkdown  source={content} />
                 </div>
             {:else}
-                <HighlightAuto code={content} let:highlighted>
-                    <LineNumbers {highlighted} hideBorder wrapLines />
-                </HighlightAuto>
+                <div style="height: 50vh">
+                    <HighlightAuto code={content} let:highlighted>
+                        <LineNumbers {highlighted} hideBorder wrapLines />
+                    </HighlightAuto>
+                </div>
             {/if}
         {:else}
             <Textbox bind:value={content} type="textarea" style="height: 50vh;" placeholder="Write your post..." />
