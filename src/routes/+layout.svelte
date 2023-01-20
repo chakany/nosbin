@@ -23,12 +23,15 @@
     let showKeyModal = false;
 
     export const ssr = false;
+    import 'bootstrap/dist/css/bootstrap.min.css';
     import "@fontsource/montserrat";
     import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome'
-    import { faNoteSticky, faUser } from '@fortawesome/free-solid-svg-icons'
+    import { faNoteSticky } from '@fortawesome/free-solid-svg-icons'
     import { faGithub } from "@fortawesome/free-brands-svg-icons";
     import { config } from '@fortawesome/fontawesome-svg-core'
     import '@fortawesome/fontawesome-svg-core/styles.css' // Import the CSS
+    import { Container, Row, Col, ListGroup, ListGroupItem } from "sveltestrap";
+
     config.autoAddCss = false // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
 
     // init connection
@@ -62,7 +65,7 @@
     <div class="align">
         <a style="text-decoration: none;" href="/">
             <FontAwesomeIcon class="align" style="margin-right: 6px" size="2xl" icon={faNoteSticky} />
-            <span class="align" id="name">nosbin</span>
+            <span class="align name">nosbin</span>
         </a>
         <!-- svelte-ignore missing-declaration -->
         v{_version_}
@@ -70,12 +73,11 @@
     <div class="align flex" style="margin-left: auto; gap: 20px;">
         <span class="align"></span>
         <a class="align" href="https://github.com/jacany/nosbin"><FontAwesomeIcon size="xl" icon={faGithub} /></a>
-        <div on:click={() => showKeyModal = true} class="align" style="cursor: pointer;">
-            <FontAwesomeIcon size="xl" icon={faUser} />
-        </div>
+        <Button on:click={() => showKeyModal = true} class="align" style="cursor: pointer;">Login</Button>
     </div>
 </div>
-<div class="container">
+<hr />
+<Container>
     {#if showKeyModal}
         <Modal on:close="{() => {saveKeys(); showKeyModal = false}}">
             <h2 slot="header">
@@ -106,7 +108,41 @@
         </Modal>
         {/if}
     <slot></slot>
-</div>
+
+</Container>
+
+<footer style="background-color: #222; padding-top: 1vh">
+    <Container>
+        <Row>
+            <Col>
+                <a style="font-size: 1.5em; text-decoration: none;" href="/">
+                    <FontAwesomeIcon class="align" style="margin-right: 6px" size="2xl" icon={faNoteSticky} />
+                    <span class="align name">nosbin</span>
+                </a>
+                <br />
+                <span>The original decentralized pasting platform, built on <a href="https://usenostr.org">nostr</a></span>
+                <br />
+                ⚠️THIS APP IS A WORK IN PROGRESS ⚠️
+                <br />
+                <br />
+                <span>Made with ❤️ by <a href="https://jacany.com">Jack Chakany</a></span>
+            </Col>
+            <Col style="text-align: center">
+                <span style="font-size: 1.5rem">nosbin</span>
+                <ListGroup style="text-align: center" flush>
+                    <ListGroupItem style="background-color: inherit; color: inherit;" class="link" action href="/">Home</ListGroupItem>
+                    <ListGroupItem style="background-color: inherit; color: inherit;" class="link" action href="/">Test</ListGroupItem>
+                </ListGroup>
+            </Col>
+        </Row>
+        <hr />
+        <Row>
+            <Col>Test</Col>
+            <Col style="text-align: center">⬆️ Back to Top ⬆️</Col>
+            <Col><small>This project is published under the <a href="https://github.com/jacany/nosbin/blob/master/LICENSE">GNU Affero General Public License</a></small></Col>
+        </Row>
+    </Container>
+</footer>
 Made by <a href="https://jacany.com">Jack Chakany</a>; Get in contact: npub1s8gvenj9j87yux0raa6j52cq8mer4xrvkv08sd020kxhektdgl4qu7ldqa; This website is licensed under the <a href="https://github.com/jacany/nosbin/blob/master/LICENSE">AGPL v3.0</a>
 
 <style>
@@ -116,7 +152,7 @@ Made by <a href="https://jacany.com">Jack Chakany</a>; Get in contact: npub1s8gv
         color: white;
     }
     :global(a) {
-        color: white;
+        color: inherit !important;
     }
     .header {
         display: flex;
@@ -132,10 +168,7 @@ Made by <a href="https://jacany.com">Jack Chakany</a>; Get in contact: npub1s8gv
         margin-top: auto;
         margin-bottom: auto;
     }
-    #name {
+    .name {
         font-size: 1.5em;
-    }
-    .container {
-        margin: 3vh 5vw;
     }
 </style>

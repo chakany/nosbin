@@ -24,10 +24,12 @@
     import { HighlightAuto, LineNumbers } from "svelte-highlight";
     import SvelteMarkdown from "svelte-markdown";
     import github from "svelte-highlight/styles/github-dark";
+    import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome'
+    import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 
     let content;
     let filename;
-    let mode = "edit";
+    let previewMode = false;
 
     $: relay = $nostrInstance.relay.url
 
@@ -50,22 +52,22 @@
 </svelte:head>
 
 <h1>Welcome to nosbin</h1>
-<p>The decentralized pasting platform, built on <a href="https://usenostr.org">nostr</a></p>
-<b>⚠️THIS APP IS A WORK IN PROGRESS ⚠️</b>
+<p>The original decentralized pasting platform, built on <a href="https://usenostr.org">nostr</a></p>
 <p>Current Relay: {relay}</p>
 
 <div style="display: flex; flex-direction: column">
     <div id="editbox" style="display: flex; flex-direction: column">
         <div style="display: flex; margin: 1vh 1vw">
             <Textbox class="align" bind:value={filename} type="input" style="width: 15vw" placeholder="README.md" />
-            <div class="align" style="display: flex; margin-left: 1vw; gap: 10px">
-                <Button on:click={() => mode = "edit"}>Edit</Button>
-                <Button on:click={() => mode = "preview"}>Preview</Button>
+            <div title="Preview" on:click={() => (previewMode = !previewMode)} class="flex align" style="margin-left: 1vw; margin-right: auto; cursor: pointer;">
+                {#if previewMode}
+                        <FontAwesomeIcon class="align" size="l" icon={faEye} />
+                    {:else}
+                        <FontAwesomeIcon class="align" size="l" icon={faEyeSlash} />
+                {/if}
             </div>
         </div>
-        {#if mode === "edit"}
-            <Textbox bind:value={content} type="textarea" style="height: 50vh;" placeholder="Write your post..." />
-            {:else if mode === "preview"}
+        {#if previewMode}
             {#if filename.endsWith(".md")}
                 <div style="margin: 1vh 2vw">
                     <SvelteMarkdown  source={content} />
@@ -75,6 +77,8 @@
                     <LineNumbers {highlighted} hideBorder wrapLines />
                 </HighlightAuto>
             {/if}
+        {:else}
+            <Textbox bind:value={content} type="textarea" style="height: 50vh;" placeholder="Write your post..." />
         {/if}
     </div>
 </div>
