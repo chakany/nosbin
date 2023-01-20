@@ -26,7 +26,7 @@
     import 'bootstrap/dist/css/bootstrap.min.css';
     import "@fontsource/montserrat";
     import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome'
-    import { faNoteSticky } from '@fortawesome/free-solid-svg-icons'
+    import { faNoteSticky, faSun } from '@fortawesome/free-solid-svg-icons'
     import { faGithub } from "@fortawesome/free-brands-svg-icons";
     import { config } from '@fortawesome/fontawesome-svg-core'
     import '@fortawesome/fontawesome-svg-core/styles.css' // Import the CSS
@@ -73,6 +73,7 @@
     <div class="align flex" style="margin-left: auto; gap: 20px;">
         <span class="align"></span>
         <a class="align" href="https://github.com/jacany/nosbin"><FontAwesomeIcon size="xl" icon={faGithub} /></a>
+        <span class="align"><FontAwesomeIcon size="xl" icon={faSun} /></span>
         <Button on:click={() => showKeyModal = true} class="align" style="cursor: pointer;">Login</Button>
     </div>
 </div>
@@ -111,7 +112,7 @@
 
 </Container>
 
-<footer style="background-color: #222; padding-top: 1vh">
+<footer style="background-color: #131313; padding-top: 1vh">
     <Container>
         <Row>
             <Col>
@@ -143,12 +144,11 @@
         </Row>
     </Container>
 </footer>
-Made by <a href="https://jacany.com">Jack Chakany</a>; Get in contact: npub1s8gvenj9j87yux0raa6j52cq8mer4xrvkv08sd020kxhektdgl4qu7ldqa; This website is licensed under the <a href="https://github.com/jacany/nosbin/blob/master/LICENSE">AGPL v3.0</a>
 
 <style>
     :global(body) {
         font-family: "Montserrat", sans-serif;
-        background-color: #111111;
+        background-color: black;
         color: white;
     }
     :global(a) {
