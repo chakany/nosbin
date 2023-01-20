@@ -89,9 +89,9 @@
                 </div>
                 <div class="flex column" >
                     Private Key (hex)
-                    <Textbox bind:value={privkey} placeholder="Type your private key... />
+                    <Textbox bind:value={privkey} placeholder="Type your private key..." />
                 </div>
-                <div class="flex" style="gap: 10px;">
+                <div class="flex" style="gap: 10px">
                     <Button on:click={genKeys}>Generate</Button>
                     <Button on:click={getPubkeyFromExtension}>Use Extension</Button>
                 </div>
