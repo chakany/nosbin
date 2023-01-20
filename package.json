@@ -23,6 +23,7 @@
 		"eslint-plugin-svelte3": "^4.0.0",
 		"prettier": "^2.8.0",
 		"prettier-plugin-svelte": "^2.8.1",
+		"sass": "^1.57.1",
 		"svelte": "^3.54.0",
 		"svelte-check": "^2.9.2",
 		"svelte-highlight": "^7.1.2",
@@ -34,6 +35,7 @@
 	"type": "module",
 	"dependencies": {
 		"@fontsource/montserrat": "^4.5.13",
+		"@fontsource/righteous": "^4.5.7",
 		"@fortawesome/fontawesome-svg-core": "^6.2.1",
 		"@fortawesome/free-brands-svg-icons": "^6.2.1",
 		"@fortawesome/free-solid-svg-icons": "^6.2.1",

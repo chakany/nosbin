@@ -53,13 +53,15 @@
   <h2>{event?.tags[0][1]}</h2>
   Posted by: {event.pubkey} <br />
   Posted on: {new Date(event.created_at * 1000)}
-  {#if event?.tags[0][1].endsWith(".md")}
-    <SvelteMarkdown source={event.content} />
+  <div style="height: 50vh">
+    {#if event?.tags[0][1].endsWith(".md")}
+      <SvelteMarkdown source={event.content} />
     {:else}
-    <HighlightAuto code={event.content} let:highlighted>
-      <LineNumbers {highlighted} hideBorder wrapLines />
-    </HighlightAuto>
-  {/if}
+      <HighlightAuto code={event.content} let:highlighted>
+        <LineNumbers {highlighted} hideBorder wrapLines />
+      </HighlightAuto>
+    {/if}
+  </div>
   {:else}
   <h2>Fetching...</h2>
   If data doesn't load, try refreshing.

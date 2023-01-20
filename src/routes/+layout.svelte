@@ -25,6 +25,7 @@
     export const ssr = false;
     import 'bootstrap/dist/css/bootstrap.min.css';
     import "@fontsource/montserrat";
+    import "@fontsource/righteous";
     import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome'
     import { faNoteSticky, faSun } from '@fortawesome/free-solid-svg-icons'
     import { faGithub } from "@fortawesome/free-brands-svg-icons";
@@ -62,22 +63,19 @@
 
 <div class="header">
     <!--suppress JSUnresolvedVariable -->
-    <div class="align">
+    <div style="font-size: 1.5rem;" class="align">
         <a style="text-decoration: none;" href="/">
             <FontAwesomeIcon class="align" style="margin-right: 6px" size="2xl" icon={faNoteSticky} />
-            <span class="align name">nosbin</span>
+            <span class="align name" style="">nosbin</span>
         </a>
         <!-- svelte-ignore missing-declaration -->
-        v{_version_}
+        <small>v{_version_}</small>
     </div>
     <div class="align flex" style="margin-left: auto; gap: 20px;">
-        <span class="align"></span>
-        <a class="align" href="https://github.com/jacany/nosbin"><FontAwesomeIcon size="xl" icon={faGithub} /></a>
         <span class="align"><FontAwesomeIcon size="xl" icon={faSun} /></span>
         <Button on:click={() => showKeyModal = true} class="align" style="cursor: pointer;">Login</Button>
     </div>
 </div>
-<hr />
 <Container>
     {#if showKeyModal}
         <Modal on:close="{() => {saveKeys(); showKeyModal = false}}">
@@ -109,43 +107,29 @@
         </Modal>
         {/if}
     <slot></slot>
-
 </Container>
-
-<footer style="background-color: #131313; padding-top: 1vh">
-    <Container>
+<footer style="margin-top: 10vh; padding-bottom: 1vh">
+    <hr />
+    <div style="background-color: black; padding: 1vh 3vw;">
         <Row>
-            <Col>
-                <a style="font-size: 1.5em; text-decoration: none;" href="/">
-                    <FontAwesomeIcon class="align" style="margin-right: 6px" size="2xl" icon={faNoteSticky} />
-                    <span class="align name">nosbin</span>
-                </a>
-                <br />
-                <span>The original decentralized pasting platform, built on <a href="https://usenostr.org">nostr</a></span>
-                <br />
-                ⚠️THIS APP IS A WORK IN PROGRESS ⚠️
-                <br />
-                <br />
-                <span>Made with ❤️ by <a href="https://jacany.com">Jack Chakany</a></span>
+            <Col style="margin: auto 0; display: flex; gap: 1vw">
+                <a class="align" href="https://chaker.net" style="text-decoration: none"><span class="chaker align">Chaker</span></a>
+                <a class="align" href="https://github.com/jacany/nosbin"><FontAwesomeIcon size="2xl" icon={faGithub} /></a>
             </Col>
-            <Col style="text-align: center">
-                <span style="font-size: 1.5rem">nosbin</span>
-                <ListGroup style="text-align: center" flush>
-                    <ListGroupItem style="background-color: inherit; color: inherit;" class="link" action href="/">Home</ListGroupItem>
-                    <ListGroupItem style="background-color: inherit; color: inherit;" class="link" action href="/">Test</ListGroupItem>
-                </ListGroup>
+            <Col style="text-align: right; margin: auto 0;">
+                <div class="align flex column">
+                    <small class="align">Made with ❤️ by Jack Chakany</small>
+                    <small class="align">This project is published under the <a href="https://github.com/jacany/nosbin/blob/master/LICENSE">GNU Affero General Public License</a></small>
+                </div>
             </Col>
         </Row>
-        <hr />
-        <Row>
-            <Col>Test</Col>
-            <Col style="text-align: center">⬆️ Back to Top ⬆️</Col>
-            <Col><small>This project is published under the <a href="https://github.com/jacany/nosbin/blob/master/LICENSE">GNU Affero General Public License</a></small></Col>
-        </Row>
-    </Container>
+    </div>
 </footer>
 
-<style>
+<style lang="scss">
+    :global(html) {
+        font-size: calc(0.4vw + 0.4vh + 0.4vmin);
+    }
     :global(body) {
         font-family: "Montserrat", sans-serif;
         background-color: black;
@@ -153,6 +137,9 @@
     }
     :global(a) {
         color: inherit !important;
+    }
+    small {
+        font-size: 0.8em;
     }
     .header {
         display: flex;
@@ -168,7 +155,49 @@
         margin-top: auto;
         margin-bottom: auto;
     }
-    .name {
-        font-size: 1.5em;
+    .chaker {
+        font-family: "Righteous", cursive;
+        font-size: 2em;
+        text-decoration: none;
+        transition: all 0.3s ease-out;
+        background: linear-gradient(
+            45deg,
+            rgb(64, 64, 64),
+            rgb(64, 64, 64)
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+
+        &:hover {
+            color: transparent;
+            cursor: pointer;
+            background: linear-gradient(
+                45deg,
+                #f17c58,
+                #e94584,
+                #24aadb,
+                #27dbb1,
+                #ffdc18,
+                #ff3706
+            );
+            background-size: 600% 100%;
+            animation: gradient 16s linear infinite;
+            animation-direction: alternate;
+            background-clip: text;
+            -webkit-background-clip: text;
+        }
+    }
+
+    @keyframes gradient {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
     }
 </style>
