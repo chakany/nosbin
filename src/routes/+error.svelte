@@ -23,11 +23,9 @@
     import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 </script>
 
-<div class="flex flex-col items-center">
+<div class="flex flex-col items-center gap-5">
   <h1 class="text-5xl">Oops...</h1>
-  <br />
   <span class="text-2xl">{$page.error.message}</span>
-  <br />
   <Button>
     <FontAwesomeIcon size="md" icon="{faArrowLeft}"></FontAwesomeIcon>
     Go Back

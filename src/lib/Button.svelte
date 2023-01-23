@@ -16,27 +16,6 @@
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<button class="bg-white text-black rounded border-solid border cursor-pointer w-32 text-xl px-2 outline-0 transition-colors hover:bg-black hover:text-white" on:click>
+<button class="bg-white text-black rounded border-solid border cursor-pointer w-32 text-xl p-2 outline-0 transition-colors hover:bg-black hover:text-white" on:click>
   <slot></slot>
 </button>
-
-<style>
-    .button {
-        background-color: white;
-        color: black;
-        border-radius: 4px;
-        border-style: solid;
-        border-width: 1px;
-        cursor: pointer;
-        width: 8rem;
-        font-size: 1.5em;
-        padding: 0.2em 0;
-        transition: background-color 0.15s, color 0.15s;
-    }
-    .button:hover {
-        transition: background-color 0.2s, color 0.2s;
-        background-color: black;
-        color: white;
-        outline: none;
-    }
-</style>
