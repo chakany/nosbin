@@ -55,37 +55,37 @@
 <p>The original decentralized pasting platform, built on <a href="https://usenostr.org">nostr</a></p>
 <p>Current Relay: {relay}</p>
 
-<div style="display: flex; flex-direction: column">
-    <div id="editbox" style="display: flex; flex-direction: column">
-        <div style="display: flex; margin: 1vh 1vw">
-            <Textbox class="align" bind:value={filename} type="input" style="width: 15vw" placeholder="README.md" />
-            <div title="Preview" on:click={() => (previewMode = !previewMode)} class="flex align" style="margin-left: 1vw; margin-right: auto; cursor: pointer;">
+<div class="flex flex-col">
+    <div id="editbox" class="flex flex-col">
+        <div class="flex m-3">
+            <Textbox class="my-auto w-28" bind:value={filename} type="input" placeholder="README.md" />
+            <div title="Preview" on:click={() => (previewMode = !previewMode)} class="flex my-auto mr-auto ml-5 cursor-pointer">
                 {#if previewMode}
-                        <FontAwesomeIcon class="align" size="l" icon={faEye} />
+                        <FontAwesomeIcon class="my-auto" size="l" icon={faEye} />
                     {:else}
-                        <FontAwesomeIcon class="align" size="l" icon={faEyeSlash} />
+                        <FontAwesomeIcon class="my-auto" size="l" icon={faEyeSlash} />
                 {/if}
             </div>
         </div>
         {#if previewMode}
             {#if filename.endsWith(".md")}
-                <div style="margin: 1vh 2vw; height: 50vh">
+                <div class="my-2 mx-4" style="height: 50vh;">
                     <SvelteMarkdown  source={content} />
                 </div>
             {:else}
-                <div style="height: 50vh">
+                <div style="height: 50vh;">
                     <HighlightAuto code={content} let:highlighted>
                         <LineNumbers {highlighted} hideBorder wrapLines />
                     </HighlightAuto>
                 </div>
             {/if}
         {:else}
-            <Textbox bind:value={content} type="textarea" style="height: 50vh;" placeholder="Write your post..." />
+            <Textbox bind:value={content} type="textarea" style="height: 50vh;" placeholder="Write your paste..." />
         {/if}
     </div>
 </div>
 
-<Button style="margin-top: 15px" on:click={post}>Post</Button>
+<Button class="mt-5" on:click={post}>Post</Button>
 <small>Make sure you inputted or generated your keys before attempting to post! Click the profile icon in the top right to get started.</small>
 
 <style>

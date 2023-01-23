@@ -18,6 +18,18 @@
 
 <script>
     import { page } from '$app/stores';
+    import Button from "$lib/Button.svelte"
+    import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
+    import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 </script>
 
-<h1>{$page.error.message}</h1>
+<div class="flex flex-col items-center">
+  <h1 class="text-5xl">Oops...</h1>
+  <br />
+  <span class="text-2xl">{$page.error.message}</span>
+  <br />
+  <Button>
+    <FontAwesomeIcon size="md" icon="{faArrowLeft}"></FontAwesomeIcon>
+    Go Back
+  </Button>
+</div>

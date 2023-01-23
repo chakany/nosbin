@@ -16,12 +16,12 @@
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<button on:click>
+<button class="bg-white text-black rounded border-solid border cursor-pointer w-32 text-xl px-2 outline-0 transition-colors hover:bg-black hover:text-white" on:click>
   <slot></slot>
 </button>
 
 <style>
-    button {
+    .button {
         background-color: white;
         color: black;
         border-radius: 4px;
@@ -33,7 +33,7 @@
         padding: 0.2em 0;
         transition: background-color 0.15s, color 0.15s;
     }
-    button:hover {
+    .button:hover {
         transition: background-color 0.2s, color 0.2s;
         background-color: black;
         color: white;

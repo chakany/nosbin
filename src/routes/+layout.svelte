@@ -23,7 +23,7 @@
     let showKeyModal = false;
 
     export const ssr = false;
-    import 'bootstrap/dist/css/bootstrap.min.css';
+    import "../app.postcss";
     import "@fontsource/montserrat";
     import "@fontsource/righteous";
     import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome'
@@ -31,7 +31,6 @@
     import { faGithub } from "@fortawesome/free-brands-svg-icons";
     import { config } from '@fortawesome/fontawesome-svg-core'
     import '@fortawesome/fontawesome-svg-core/styles.css' // Import the CSS
-    import { Container, Row, Col, ListGroup, ListGroupItem } from "sveltestrap";
 
     config.autoAddCss = false // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
 
@@ -61,40 +60,40 @@
     $nostrInstance.connect()
 </script>
 
-<div class="header">
+<div class="flex mx-20 my-7">
     <!--suppress JSUnresolvedVariable -->
-    <div style="font-size: 1.5rem;" class="align">
+    <div style="font-size: 1.5rem;" class>
         <a style="text-decoration: none;" href="/">
-            <FontAwesomeIcon class="align" style="margin-right: 6px" size="2xl" icon={faNoteSticky} />
-            <span class="align name" style="">nosbin</span>
+            <FontAwesomeIcon class="my-auto mr-3" size="2xl" icon="{faNoteSticky}"></FontAwesomeIcon>
+            <span class="my-auto name" style>nosbin</span>
         </a>
         <!-- svelte-ignore missing-declaration -->
         <small>v{_version_}</small>
     </div>
-    <div class="align flex" style="margin-left: auto; gap: 20px;">
-        <span class="align"><FontAwesomeIcon size="xl" icon={faSun} /></span>
-        <Button on:click={() => showKeyModal = true} class="align" style="cursor: pointer;">Login</Button>
+    <div class="ml-auto flex gap-8">
+        <span class="my-auto"><FontAwesomeIcon size="xl" icon="{faSun}"></FontAwesomeIcon></span>
+        <Button on:click={() => showKeyModal = true} class="my-auto cursor-pointer">Login</Button>
     </div>
 </div>
-<Container>
+<div class="container mx-auto px-20">
     {#if showKeyModal}
-        <Modal on:close="{() => {saveKeys(); showKeyModal = false}}">
+        <Modal on:close={() => {saveKeys(); showKeyModal = false}}>
             <h2 slot="header">
                 Manage Keys
             </h2>
 
-            <div class="flex column" style="gap: 10px;">
-                <div class="flex column" >
+            <div class="flex flex-col gap-5">
+                <div class="flex flex-col">
                     Public Key (hex)
-                    <Textbox bind:value={pubkey} placeholder="Type your public key..." />
+                    <Textbox bind:value={pubkey} placeholder="Type your public key..."></Textbox>
                 </div>
-                <div class="flex column" >
+                <div class="flex flex-col">
                     Private Key (hex)
-                    <Textbox bind:value={privkey} placeholder="Type your private key..." />
+                    <Textbox bind:value={privkey} placeholder="Type your private key..."></Textbox>
                 </div>
-                <div class="flex" style="gap: 10px">
-                    <Button on:click={genKeys}>Generate</Button>
-                    <Button on:click={getPubkeyFromExtension}>Use Extension</Button>
+                <div class="flex gap-5">
+                    <Button on:click="{genKeys}">Generate</Button>
+                    <Button on:click="{getPubkeyFromExtension}">Use Extension</Button>
                 </div>
                 <small><i>
                     {#if pubkey && privkey === ""}
@@ -107,26 +106,24 @@
         </Modal>
         {/if}
     <slot></slot>
-</Container>
-<footer style="margin-top: 10vh; padding-bottom: 1vh">
-    <hr />
-    <div style="background-color: black; padding: 1vh 3vw;">
-        <Row>
-            <Col style="margin: auto 0; display: flex; gap: 1vw">
-                <a class="align" href="https://chaker.net" style="text-decoration: none"><span class="chaker align">Chaker</span></a>
-                <a class="align" href="https://github.com/jacany/nosbin"><FontAwesomeIcon size="2xl" icon={faGithub} /></a>
-            </Col>
-            <Col style="text-align: right; margin: auto 0;">
-                <div class="align flex column">
-                    <small class="align">Made with ❤️ by Jack Chakany</small>
-                    <small class="align">This project is published under the <a href="https://github.com/jacany/nosbin/blob/master/LICENSE">GNU Affero General Public License</a></small>
-                </div>
-            </Col>
-        </Row>
+</div>
+<footer class="mt-40 pb-4">
+    <hr>
+    <div class="px-12 py-10">
+        <div class="grid grid-rows-3 grid-flow-col gap-4">
+            <div class="flex gap-4 col-start-1">
+                <a class="my-auto" href="https://chaker.net" style="text-decoration: none"><span class="chaker my-auto">Chaker</span></a>
+                <a class="my-auto" href="https://github.com/jacany/nosbin"><FontAwesomeIcon size="2xl" icon="{faGithub}"></FontAwesomeIcon></a>
+            </div>
+            <div class="col-start-2 flex flex-col text-right">
+                <small class="my-auto">Made with ❤️ by <a class="underline" href="https://jacany.com">Jack Chakany</a></small>
+                <small class="my-auto">This project is published under the <a href="https://github.com/jacany/nosbin/blob/master/LICENSE">GNU Affero General Public License</a></small>
+            </div>
+        </div>
     </div>
 </footer>
 
-<style lang="scss">
+<style lang="postcss">
     :global(html) {
         font-size: calc(0.4vw + 0.4vh + 0.4vmin);
     }
@@ -141,20 +138,6 @@
     small {
         font-size: 0.8em;
     }
-    .header {
-        display: flex;
-        margin: 20px 5vw
-    }
-    .flex {
-        display: flex;
-    }
-    .column {
-        flex-direction: column;
-    }
-    .align {
-        margin-top: auto;
-        margin-bottom: auto;
-    }
     .chaker {
         font-family: "Righteous", cursive;
         font-size: 2em;
@@ -168,26 +151,25 @@
         background-clip: text;
         -webkit-background-clip: text;
         color: transparent;
-
-        &:hover {
-            color: transparent;
-            cursor: pointer;
-            background: linear-gradient(
-                45deg,
-                #f17c58,
-                #e94584,
-                #24aadb,
-                #27dbb1,
-                #ffdc18,
-                #ff3706
-            );
-            background-size: 600% 100%;
-            animation: gradient 16s linear infinite;
-            animation-direction: alternate;
-            background-clip: text;
-            -webkit-background-clip: text;
-        }
     }
+    .chaker:hover {
+         color: transparent;
+         cursor: pointer;
+         background: linear-gradient(
+           45deg,
+           #f17c58,
+           #e94584,
+           #24aadb,
+           #27dbb1,
+           #ffdc18,
+           #ff3706
+         );
+         background-size: 600% 100%;
+         animation: gradient 16s linear infinite;
+         animation-direction: alternate;
+         background-clip: text;
+         -webkit-background-clip: text;
+     }
 
     @keyframes gradient {
         0% {

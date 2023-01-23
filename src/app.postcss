@@ -1,6 +1,5 @@
-import preprocess from "svelte-preprocess";
 /*
- * svelte.config.js
+ * app.postcss
  * Copyright (c) 2023 Jack Chakany <jacany@chaker.net>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,24 +15,6 @@ import preprocess from "svelte-preprocess";
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-import adapter from "@sveltejs/adapter-auto";
-import { vitePreprocess } from "@sveltejs/kit/vite";
-
-/** @type {import('@sveltejs/kit').Config} */
-const config = {
-	// Consult https://kit.svelte.dev/docs/integrations#preprocessors
-	// for more information about preprocessors
-	preprocess: [
-		vitePreprocess(),
-		preprocess({
-			postcss: true
-		})
-	],
-
-	kit: {
-		adapter: adapter()
-	}
-};
-
-export default config;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
