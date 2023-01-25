@@ -35,10 +35,12 @@ export class NewNostr {
     private _pubkey: string
     private _privkey: string
     private _log: Logger
+    private relayUpdateCallback: any;
 
-    constructor() {
+    constructor(relayUpdateCallback) {
         this.relays = new Map()
         this.subs = new Map()
+        this.relayUpdateCallback = relayUpdateCallback;
         if (browser) {
             let storedKeys = JSON.parse(localStorage.getItem("keys"))
             this._pubkey = storedKeys ? storedKeys[0] : ""
@@ -136,26 +138,41 @@ export class NewNostr {
     private _bindToRelayEmitters(relay: Relay) {
         relay.on("connect", () => {
             this._log.debug(`Connected to ${relay.url}`)
+            this.relayUpdateCallback()
         })
         relay.on("error", (error) => {
-            this._log.error(error)
+            this._log.error(`Error in connection to ${relay.url}: ` + error)
+            this.relayUpdateCallback()
         })
         relay.on("disconnect", () => {
             this._log.debug(`Disconnected from ${relay.url}`)
+            this.relayUpdateCallback()
         })
     }
 
     public disconnectOne(relayUrl: string): Promise<void> {
         const relay = this.relays.get(relayUrl)
-        return relay.close()
+        try {
+            relay.close()
+        } catch (error) {
+            console.error(`Failed to disconnect from relay ${relayUrl}: ` + error)
+        }
+        return
     }
 
     public addRelay(relayUrl: string): Map<string, Relay> {
-        return this.relays.set(relayUrl, relayInit(relayUrl));
+        const set = this.relays.set(relayUrl, relayInit(relayUrl));
+        try {
+            this.relayUpdateCallback()
+        } catch (error) {
+            // assuming that there is no error, and that the class just hasn't initialzed yet
+        }
+        return set;
     }
 
     public removeRelay(relayUrl: string) {
         this.relays.delete(relayUrl)
+        this.relayUpdateCallback()
     }
 
     //

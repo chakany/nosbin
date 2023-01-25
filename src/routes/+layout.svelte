@@ -35,12 +35,25 @@
   config.autoAddCss = false; // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
 
   // init connection
-  import { nostr } from "$lib/store";
-  let inputtedPubkey = $nostr.pubkey
-  let inputtedPrivkey = $nostr.privkey
+  import { NewNostr } from "$lib/Nostr";
+  let nostr = new NewNostr(handleRelayChange)
+  let connectedRelays = [...nostr.relays].map(([_, value]) => (value)).filter((relay) => relay.status === 1)
+  let inputtedPubkey = nostr.pubkey
+  let inputtedPrivkey = nostr.privkey
+
+  function handleRelayChange() {
+	  nostr = nostr
+	  let len = nostr.relays.size;
+	  connectedRelays = [...nostr.relays].map(([_, value]) => (value)).filter((relay) => relay.status === 1)
+	  if (connectedRelays.length == len) {
+		  connecting = false;
+	  } else {
+		  connecting = true;
+	  }
+  }
 
   let relayField = "";
-  $nostr.connectAll()
+  nostr.connectAll()
 </script>
 
 <div class="header">
@@ -58,12 +71,14 @@
 	<a class="align" href="https://github.com/jacany/nosbin">
 	  <FontAwesomeIcon size="xl" icon={faGithub} />
 	</a>
-		<!-- TODO: make dynamic, i want to work on purely UI -->
-	<div on:click={() => {showRelayModal = true; connecting = !connecting}} class="align" style="cursor: pointer;">
+	  {#if connecting}
+		  <span class="align">{connectedRelays.length}/{nostr.relays.size}</span>
+	  {/if}
+	<div on:click={() => {showRelayModal = true}} class="align" style="cursor: pointer;">
 		{#if connecting}
-			<FontAwesomeIcon size="xl" fade={true} style="color: yellow" icon={faServer} />
+			<FontAwesomeIcon style="color: yellow" size="xl" fade={true} icon={faServer} />
 			{:else}
-			<FontAwesomeIcon size="xl" fade={false} style="color: green;" icon={faServer} />
+			<FontAwesomeIcon size="xl" fade={false} icon={faServer} />
 			{/if}
 	</div>
 	<div on:click={() => showKeyModal = true} class="align" style="cursor: pointer;">
@@ -88,8 +103,8 @@
 		  <Textbox bind:value={inputtedPrivkey} placeholder="nsec..." />
 		</div>
 		<div class="flex" style="gap: 10px;">
-		  <Button on:click={() => [inputtedPubkey, inputtedPrivkey] = $nostr.generateKeys()}>Generate</Button>
-		  <Button on:click={async () => { inputtedPubkey = await $nostr.getPubkeyFromExtension(); inputtedPrivkey = "" }}>Use Extension</Button>
+		  <Button on:click={() => [inputtedPubkey, inputtedPrivkey] = nostr.generateKeys()}>Generate</Button>
+		  <Button on:click={async () => { inputtedPubkey = await nostr.getPubkeyFromExtension(); inputtedPrivkey = "" }}>Use Extension</Button>
 		</div>
 		<small><i>
 		  {#if inputtedPubkey && inputtedPrivkey === ""}
@@ -107,7 +122,7 @@
 	  </h2>
 
 	  <div class="flex column" style="gap: 10px;">
-		{#each [...$nostr.relays].map(([_, value]) => (value)) as relay}
+		{#each [...nostr.relays].map(([_, value]) => (value)) as relay}
 		  <div class="flex">
 			<div class="align" style="margin-right: auto">
 			  {#if relay.status === 0 || relay.status === 2}
@@ -121,12 +136,12 @@
 			  {/if}
 			  {relay.url}
 			</div>
-			<Button class="align" on:click={async () =>{ await $nostr.disconnectOne(relay.url); $nostr.removeRelay(relay.url) }}>Remove</Button>
+			<Button class="align" on:click={async () =>{ await nostr.disconnectOne(relay.url); nostr.removeRelay(relay.url) }}>Remove</Button>
 		  </div>
 		{/each}
 		<div class="flex" style="gap: 15px">
 		  <Textbox bind:value={relayField} placeholder="wss://"></Textbox>
-		  <Button on:click={() => $nostr.addRelay(relayField)}>Add</Button>
+		  <Button on:click={() => nostr.addRelay(relayField)}>Add</Button>
 		</div>
 	  </div>
 	</Modal>
