@@ -26,8 +26,13 @@ import {
     nip19
 } from 'nostr-tools/index'
 import { browser } from "$app/environment";
-import type { Relay, Event, Sub } from "nostr-tools/index"
+import type { Relay as NostrRelay, Event, Sub } from "nostr-tools/index"
 import Logger from "$lib/Logger"
+
+export interface Relay extends NostrRelay {
+    // checks if we already have EventEmitters attached
+    bound?: boolean
+}
 
 export class NewNostr {
     public relays: Map<string, Relay>
@@ -115,7 +120,7 @@ export class NewNostr {
 
     public async connectAll() {
         for (let [_, relay] of this.relays) {
-            this._bindToRelayEmitters(relay)
+            if (!relay.bound) this._bindToRelayEmitters(relay)
             try {
                 relay.connect()
             } catch (err) {
@@ -126,7 +131,7 @@ export class NewNostr {
 
     public connectOne(relayUrl: string): Relay {
         const relay = this.relays.get(relayUrl)
-        this._bindToRelayEmitters(relay)
+        if (!relay.bound) this._bindToRelayEmitters(relay)
         try {
             relay.connect()
         } catch (err) {
@@ -136,6 +141,9 @@ export class NewNostr {
     }
 
     private _bindToRelayEmitters(relay: Relay) {
+        relay.bound = true;
+        this.relays.set(relay.url, relay)
+        console.debug("Bound eventemitters")
         relay.on("connect", () => {
             this._log.debug(`Connected to ${relay.url}`)
             this.relayUpdateCallback()
