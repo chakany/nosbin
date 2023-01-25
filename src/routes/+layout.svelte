@@ -141,7 +141,7 @@
 		{/each}
 		<div class="flex" style="gap: 15px">
 		  <Textbox bind:value={relayField} placeholder="wss://"></Textbox>
-		  <Button on:click={() => nostr.addRelay(relayField)}>Add</Button>
+		  <Button on:click={async () => {await nostr.addRelay(relayField); nostr.connectOne(relayField)}}>Add</Button>
 		</div>
 	  </div>
 	</Modal>
