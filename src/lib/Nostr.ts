@@ -26,7 +26,7 @@ import {
     nip19
 } from 'nostr-tools/index'
 import { browser } from "$app/environment";
-import type { Relay as NostrRelay, Event, Sub } from "nostr-tools/index"
+import type { Relay as NostrRelay, Event, Sub, Filter } from "nostr-tools/index"
 import Logger from "$lib/Logger"
 
 export interface Relay extends NostrRelay {
@@ -46,6 +46,7 @@ export class NewNostr {
         this.relays = new Map()
         this.subs = new Map()
         this.relayUpdateCallback = relayUpdateCallback;
+        this._log = new Logger("nostr")
         if (browser) {
             let storedKeys = JSON.parse(localStorage.getItem("keys"))
             this._pubkey = storedKeys ? storedKeys[0] : ""
@@ -54,12 +55,6 @@ export class NewNostr {
             this._pubkey = ""
             this._privkey = ""
         }
-        this._log = new Logger("nostr")
-        this.addRelay(`wss://nostr.chaker.net`)
-        this.addRelay(`wss://relay.damus.io`)
-        this.addRelay("wss://nostr.fmt.wiz.biz")
-        this.addRelay("wss://nostr.oxtr.dev")
-        this.addRelay("wss://nostr.v0l.io")
     }
 
     //
@@ -120,6 +115,7 @@ export class NewNostr {
 
     public async connectAll() {
         for (let [_, relay] of this.relays) {
+            if (relay.status === 1) return
             if (!relay.bound) this._bindToRelayEmitters(relay)
             try {
                 relay.connect()
@@ -129,8 +125,9 @@ export class NewNostr {
         }
     }
 
-    public connectOne(relayUrl: string): Relay {
+    public async connectOne(relayUrl: string): Promise<Relay> {
         const relay = this.relays.get(relayUrl)
+        if (relay.status === 1) return
         if (!relay.bound) this._bindToRelayEmitters(relay)
         try {
             relay.connect()
@@ -144,6 +141,11 @@ export class NewNostr {
         relay.bound = true;
         this.relays.set(relay.url, relay)
         console.debug("Bound eventemitters")
+        setInterval(() => {
+            const grabbedRelay = this.relays.get(relay.url)
+            if (!grabbedRelay) return
+            if (grabbedRelay.status !== 1) this.connectOne(relay.url)
+        }, 10000)
         relay.on("connect", () => {
             this._log.debug(`Connected to ${relay.url}`)
             this.relayUpdateCallback()
@@ -181,6 +183,45 @@ export class NewNostr {
     public removeRelay(relayUrl: string) {
         this.relays.delete(relayUrl)
         this.relayUpdateCallback()
+    }
+
+    public async getRelays() {
+        if (!browser) return
+        const storedRelays = JSON.parse(localStorage.getItem("relays"))
+        if (!storedRelays) {
+            this.addRelay(`wss://nostr.chaker.net`)
+            this.addRelay("wss://eden.nostr.land")
+            this.addRelay("wss://nostr.orangepill.dev")
+            this.addRelay("wss://relay.damus.io")
+
+            await this.connectAll()
+            await this._fetchRelaysFromNostr();
+            await this.connectAll()
+        } else {
+            this._setRelaysFromList(storedRelays)
+            await this.connectAll()
+            await this._fetchRelaysFromNostr();
+            await this.connectAll()
+        }
+    }
+
+    private async _fetchRelaysFromNostr() {
+        const relayEvent = await this.getEvent({
+            kinds: [3],
+            authors: [this._pubkey]
+        })
+
+        if (relayEvent.content === "") return
+        localStorage.setItem("relays", relayEvent.content)
+        this._setRelaysFromList(JSON.parse(relayEvent.content))
+    }
+
+    private _setRelaysFromList(relays) {
+        this.relays.clear()
+        for (let [url, _] of Object.entries(relays)) {
+            if (this.relays.has(url)) continue
+            this.addRelay(url)
+        }
     }
 
     //
@@ -227,9 +268,11 @@ export class NewNostr {
         return
     }
 
-    public getEvent(filter): Promise<Event> {
+    public getEvent(filter: Filter): Promise<Event> {
         return new Promise<Event>((resolve) => {
-            const subMapName = filter.ids[0] ? filter.ids[0] : filter.kind
+            let subMapName: any
+            if (filter.ids) subMapName = filter.ids[0]
+            else if (filter.kinds) subMapName = filter.kinds[0]
             this.subs.set(subMapName, new Map())
             let subMap = this.subs.get(subMapName)
             const gotEvent = (event) => {

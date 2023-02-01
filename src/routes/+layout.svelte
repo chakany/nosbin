@@ -36,10 +36,17 @@
 
   // init connection
   import { NewNostr } from "$lib/Nostr";
+  import {onMount} from "svelte";
   let nostr = new NewNostr(handleRelayChange)
   let connectedRelays = [...nostr.relays].map(([_, value]) => (value)).filter((relay) => relay.status === 1)
-  let inputtedPubkey = nostr.pubkey
-  let inputtedPrivkey = nostr.privkey
+  let inputtedPubkey = nostr.pubkey;
+  let inputtedPrivkey = nostr.privkey;
+
+  // needed because someone decided that nostr-tools relay connect() doesn't need a error handler in any way
+  // makes it impossible to catch initial connection errors
+  onMount(() => {
+	  window.addEventListener("unhandledrejection", () => {});
+  })
 
   function handleRelayChange() {
 	  nostr = nostr
@@ -53,7 +60,8 @@
   }
 
   let relayField = "";
-  nostr.connectAll()
+  // Bootstrap relays
+  nostr.getRelays();
 </script>
 
 <div class="header">
