@@ -57,7 +57,7 @@
     <SvelteMarkdown source={event.content} />
     {:else}
     <HighlightAuto code={event.content} let:highlighted>
-      <LineNumbers {highlighted} hideBorder wrapLines />
+      <LineNumbers {highlighted} style="user-select: none" hideBorder wrapLines />
     </HighlightAuto>
   {/if}
   {:else}
