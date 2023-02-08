@@ -17,6 +17,5 @@
  */
 
 import {writable} from "svelte/store";
-import Nostr, {NewNostr} from "$lib/Nostr"
-export const nostrInstance = writable(new Nostr())
-export const nostr = writable(new NewNostr(() => {}))
+import Nostr from "$lib/Nostr"
+export const nostr = writable(new Nostr(() => {}))

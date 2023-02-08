@@ -17,7 +17,6 @@
  */
 
 import {
-    relayInit,
     generatePrivateKey,
     getPublicKey,
     getEventHash,
@@ -28,9 +27,8 @@ import { browser } from "$app/environment";
 import type { Event } from "nostr-tools/index"
 import Logger from "$lib/Logger"
 import { RelayPool } from "nostr-relaypool";
-import {nostr} from "$lib/store";
 
-export class NewNostr {
+export default class Nostr {
     public relays: RelayPool
     private _pubkey: string
     private _privkey: string
@@ -38,6 +36,7 @@ export class NewNostr {
     private relayUpdateCallback: any;
 
     constructor(relayUpdateCallback) {
+        // Bootstrap Relays
         this.relays = new RelayPool([
             "wss://nostr.chaker.net",
             "wss://eden.nostr.land",
@@ -138,99 +137,5 @@ export class NewNostr {
 
     public getEventById(id: string, maxDelayms: number = 100): Promise<Event> {
         return this.relays.getEventById(id, this.getCurrentRelaysInArray(), maxDelayms)
-    }
-}
-
-export default class Nostr {
-    public relays: Relay[]
-    public pubkey: string
-    public privkey: string;
-    public extension: boolean;
-    constructor() {
-        this.relays = [];
-        this.relays[0] = relayInit('wss://nostr.chaker.net');
-        this.relays[1] = relayInit('wss://relay.damus.io');
-        this.relays[2] = relayInit('wss://nostr.oxtr.dev');
-        if (browser && localStorage.getItem("keys")) {
-            const keys = JSON.parse(localStorage.getItem("keys")!)
-            this.pubkey = keys[0]
-            this.privkey = keys[1]
-            this.extension = keys[2]
-        } else {
-            this.pubkey = ""
-            this.privkey = ""
-            this.extension = false
-        }
-    }
-
-    public genKeys(): string[] {
-        this.privkey = generatePrivateKey()
-        this.pubkey = getPublicKey(this.privkey)
-        if (browser) localStorage.setItem("keys", JSON.stringify([this.pubkey, this.privkey]))
-        return [this.pubkey, this.privkey]
-    }
-
-    public setKeys(pub: string, priv: string, extension: boolean) {
-        this.pubkey = pub;
-        this.privkey = priv
-        this.extension = extension
-        // also save into localstorage
-        if (browser) localStorage.setItem("keys", JSON.stringify([this.pubkey, this.privkey, extension]))
-    }
-
-    public async getEvent(id: string): Promise<Event | null> {
-        return new Promise<Event |null>((resolve) => {
-            let sub = this.relays[0].sub([
-                {
-                    ids: [id]
-                }
-            ])
-            sub.on('event', (event: Event) => {
-                console.debug('we got the event we wanted:', event)
-                resolve(event)
-            })
-            sub.on('eose', () => {
-                sub.unsub()
-            })
-        })
-    }
-
-    public async postFile(filename: string, content: string) {
-
-        let event: Event = {
-            kind: 1050,
-            pubkey: this.pubkey,
-            created_at: Math.floor(Date.now() / 1000),
-            tags: [
-                ["filename", filename],
-                ["client", "nosbin"]
-            ],
-            content: content
-        }
-        event.id = getEventHash(event)
-        // @ts-ignore might exist we don't know
-        if (browser && window.nostr && this.privkey == "" && this.extension) {
-            // assume that we are using nostr extension
-            // @ts-ignore
-            event = await window.nostr.signEvent(event)
-            console.debug(event)
-        } else {
-            event.sig = signEvent(event, this.privkey)
-        }
-
-        for (let relay of this.relays) {
-            let pub = relay.publish(event)
-            pub.on('ok', () => {
-                console.debug(`${relay.url} has accepted our event`)
-            })
-            pub.on('seen', () => {
-                console.debug(`we saw the event on ${relay?.url}`)
-            })
-            pub.on('failed', (reason: any) => {
-                console.error(`failed to publish to ${relay.url}: ${reason}`)
-            })
-        }
-
-        return event.id
     }
 }
