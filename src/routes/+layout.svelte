@@ -37,9 +37,23 @@
   // init connection
   import { nostr } from "$lib/store";
   import {onMount} from "svelte";
-  let connectedRelays = $nostr.relays.getRelayStatuses().filter((value) => { value[1] === 1})
+  import {c} from "svelte-highlight/languages";
   let inputtedPubkey = $nostr.pubkey;
   let inputtedPrivkey = $nostr.privkey;
+  let countdown = 10
+  setInterval(() => {
+	  if (countdown > 0) countdown--
+	  else {
+		  updateState()
+		  countdown = 10
+	  }
+  }, 1000)
+
+  // used to refresh relay state on update, like when an entry is added and deleted and such.
+  function updateState() {
+	  nostr.set($nostr)
+	  countdown = 10
+  }
 
   // needed because someone decided that nostr-tools relay connect() doesn't need a error handler in any way
   // makes it impossible to catch initial connection errors
@@ -65,15 +79,8 @@
 	<a class="align" href="https://github.com/jacany/nosbin">
 	  <FontAwesomeIcon size="xl" icon={faGithub} />
 	</a>
-	  {#if connecting}
-		  <span class="align">{connectedRelays.length}/{$nostr.relays.size}</span>
-	  {/if}
 	<div on:click={() => {showRelayModal = true}} class="align" style="cursor: pointer;">
-		{#if connecting}
-			<FontAwesomeIcon style="color: yellow" size="xl" fade={true} icon={faServer} />
-			{:else}
-			<FontAwesomeIcon size="xl" fade={false} icon={faServer} />
-			{/if}
+		<FontAwesomeIcon size="xl" fade={false} icon={faServer} />
 	</div>
 	<div on:click={() => showKeyModal = true} class="align" style="cursor: pointer;">
 	  <FontAwesomeIcon size="xl" icon={faUser} />
@@ -114,7 +121,7 @@
 	  <h2 slot="header">
 		Manage Relays
 	  </h2>
-
+		Refreshing in {countdown}s
 	  <div class="flex column" style="gap: 10px;">
 		{#each $nostr.relays.getRelayStatuses() as relay}
 		  <div class="flex">
@@ -130,12 +137,12 @@
 			  {/if}
 			  {relay[0]}
 			</div>
-			<Button class="align" on:click={async () =>{ $nostr.relays.removeRelay(relay[0]) }}>Remove</Button>
+			<Button class="align" on:click={() =>{ $nostr.relays.removeRelay(relay[0]); updateState() }}>Remove</Button>
 		  </div>
 		{/each}
 		<div class="flex" style="gap: 15px">
 		  <Textbox bind:value={relayField} placeholder="wss://"></Textbox>
-		  <Button on:click={async () => { $nostr.relays.addOrGetRelay(relayField) }}>Add</Button>
+		  <Button on:click={() => { $nostr.relays.addOrGetRelay(relayField); updateState() }}>Add</Button>
 		</div>
 	  </div>
 	</Modal>
