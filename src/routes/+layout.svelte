@@ -35,12 +35,11 @@
   config.autoAddCss = false; // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
 
   // init connection
-  import { NewNostr } from "$lib/Nostr";
+  import { nostr } from "$lib/store";
   import {onMount} from "svelte";
-  let nostr = new NewNostr(handleRelayChange)
-  let connectedRelays = [...nostr.relays].map(([_, value]) => (value)).filter((relay) => relay.status === 1)
-  let inputtedPubkey = nostr.pubkey;
-  let inputtedPrivkey = nostr.privkey;
+  let connectedRelays = $nostr.relays.getRelayStatuses().filter((value) => { value[1] === 1})
+  let inputtedPubkey = $nostr.pubkey;
+  let inputtedPrivkey = $nostr.privkey;
 
   // needed because someone decided that nostr-tools relay connect() doesn't need a error handler in any way
   // makes it impossible to catch initial connection errors
@@ -48,20 +47,7 @@
 	  window.addEventListener("unhandledrejection", () => {});
   })
 
-  function handleRelayChange() {
-	  nostr = nostr
-	  let len = nostr.relays.size;
-	  connectedRelays = [...nostr.relays].map(([_, value]) => (value)).filter((relay) => relay.status === 1)
-	  if (connectedRelays.length == len) {
-		  connecting = false;
-	  } else {
-		  connecting = true;
-	  }
-  }
-
   let relayField = "";
-  // Bootstrap relays
-  nostr.getRelays();
 </script>
 
 <div class="header">
@@ -80,7 +66,7 @@
 	  <FontAwesomeIcon size="xl" icon={faGithub} />
 	</a>
 	  {#if connecting}
-		  <span class="align">{connectedRelays.length}/{nostr.relays.size}</span>
+		  <span class="align">{connectedRelays.length}/{$nostr.relays.size}</span>
 	  {/if}
 	<div on:click={() => {showRelayModal = true}} class="align" style="cursor: pointer;">
 		{#if connecting}
@@ -111,8 +97,8 @@
 		  <Textbox bind:value={inputtedPrivkey} placeholder="nsec..." />
 		</div>
 		<div class="flex" style="gap: 10px;">
-		  <Button on:click={() => [inputtedPubkey, inputtedPrivkey] = nostr.generateKeys()}>Generate</Button>
-		  <Button on:click={async () => { inputtedPubkey = await nostr.getPubkeyFromExtension(); inputtedPrivkey = "" }}>Use Extension</Button>
+		  <Button on:click={() => [inputtedPubkey, inputtedPrivkey] = $nostr.generateKeys()}>Generate</Button>
+		  <Button on:click={async () => { inputtedPubkey = await $nostr.getPubkeyFromExtension(); inputtedPrivkey = "" }}>Use Extension</Button>
 		</div>
 		<small><i>
 		  {#if inputtedPubkey && inputtedPrivkey === ""}
@@ -130,26 +116,26 @@
 	  </h2>
 
 	  <div class="flex column" style="gap: 10px;">
-		{#each [...nostr.relays].map(([_, value]) => (value)) as relay}
+		{#each $nostr.relays.getRelayStatuses() as relay}
 		  <div class="flex">
 			<div class="align" style="margin-right: auto">
-			  {#if relay.status === 0 || relay.status === 2}
+			  {#if relay[1] === 0 || relay[1] === 2}
 				⚠️
-			  {:else if relay.status === 1}
+			  {:else if relay[1] === 1}
 				✅
-			  {:else if relay.status === 3}
+			  {:else if relay[1] === 3}
 				❌
 			  {:else}
 				❌
 			  {/if}
-			  {relay.url}
+			  {relay[0]}
 			</div>
-			<Button class="align" on:click={async () =>{ await nostr.disconnectOne(relay.url); nostr.removeRelay(relay.url) }}>Remove</Button>
+			<Button class="align" on:click={async () =>{ $nostr.relays.removeRelay(relay[0]) }}>Remove</Button>
 		  </div>
 		{/each}
 		<div class="flex" style="gap: 15px">
 		  <Textbox bind:value={relayField} placeholder="wss://"></Textbox>
-		  <Button on:click={async () => {await nostr.addRelay(relayField); nostr.connectOne(relayField)}}>Add</Button>
+		  <Button on:click={async () => { $nostr.relays.addOrGetRelay(relayField) }}>Add</Button>
 		</div>
 	  </div>
 	</Modal>

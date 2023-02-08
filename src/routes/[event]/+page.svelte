@@ -29,10 +29,7 @@
     // fetch
     async function fetch() {
         console.debug($page.params.event)
-        event = await $nostr.getEvent({
-          ids: [$page.params.event],
-          kinds: [1050],
-        })
+        event = await $nostr.relays.getEventById($page.params.event, $nostr.getCurrentRelaysInArray(), 100)
         hasData = true
     }
 </script>

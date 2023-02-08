@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "websocket-polyfill"
 import {
     relayInit,
     generatePrivateKey,
@@ -26,25 +25,24 @@ import {
     nip19
 } from 'nostr-tools/index'
 import { browser } from "$app/environment";
-import type { Relay as NostrRelay, Event, Sub, Filter } from "nostr-tools/index"
+import type { Event } from "nostr-tools/index"
 import Logger from "$lib/Logger"
-
-export interface Relay extends NostrRelay {
-    // checks if we already have EventEmitters attached
-    bound?: boolean
-}
+import { RelayPool } from "nostr-relaypool";
+import {nostr} from "$lib/store";
 
 export class NewNostr {
-    public relays: Map<string, Relay>
-    public subs: Map<string, Map<string, Sub>>
+    public relays: RelayPool
     private _pubkey: string
     private _privkey: string
     private _log: Logger
     private relayUpdateCallback: any;
 
     constructor(relayUpdateCallback) {
-        this.relays = new Map()
-        this.subs = new Map()
+        this.relays = new RelayPool([
+            "wss://nostr.chaker.net",
+            "wss://eden.nostr.land",
+            "wss://relay.damus.io"
+        ])
         this.relayUpdateCallback = relayUpdateCallback;
         this._log = new Logger("nostr")
         if (browser) {
@@ -109,119 +107,8 @@ export class NewNostr {
         return this.pubkey
     }
 
-    //
-    // Relay Management
-    //
-
-    public async connectAll() {
-        for (let [_, relay] of this.relays) {
-            if (relay.status === 1) return
-            if (!relay.bound) this._bindToRelayEmitters(relay)
-            try {
-                relay.connect()
-            } catch (err) {
-                console.error(`unable to connect to ${relay.url}: ` + err)
-            }
-        }
-    }
-
-    public async connectOne(relayUrl: string): Promise<Relay> {
-        const relay = this.relays.get(relayUrl)
-        if (relay.status === 1) return
-        if (!relay.bound) this._bindToRelayEmitters(relay)
-        try {
-            relay.connect()
-        } catch (err) {
-            console.error(`unable to connect to ${relay.url}: ` + err)
-        }
-        return relay
-    }
-
-    private _bindToRelayEmitters(relay: Relay) {
-        relay.bound = true;
-        this.relays.set(relay.url, relay)
-        console.debug("Bound eventemitters")
-        setInterval(() => {
-            const grabbedRelay = this.relays.get(relay.url)
-            if (!grabbedRelay) return
-            if (grabbedRelay.status !== 1) this.connectOne(relay.url)
-        }, 10000)
-        relay.on("connect", () => {
-            this._log.debug(`Connected to ${relay.url}`)
-            this.relayUpdateCallback()
-        })
-        relay.on("error", (error) => {
-            this._log.error(`Error in connection to ${relay.url}: ` + error)
-            this.relayUpdateCallback()
-        })
-        relay.on("disconnect", () => {
-            this._log.debug(`Disconnected from ${relay.url}`)
-            this.relayUpdateCallback()
-        })
-    }
-
-    public disconnectOne(relayUrl: string): Promise<void> {
-        const relay = this.relays.get(relayUrl)
-        try {
-            relay.close()
-        } catch (error) {
-            console.error(`Failed to disconnect from relay ${relayUrl}: ` + error)
-        }
-        return
-    }
-
-    public addRelay(relayUrl: string): Map<string, Relay> {
-        const set = this.relays.set(relayUrl, relayInit(relayUrl));
-        try {
-            this.relayUpdateCallback()
-        } catch (error) {
-            // assuming that there is no error, and that the class just hasn't initialzed yet
-        }
-        return set;
-    }
-
-    public removeRelay(relayUrl: string) {
-        this.relays.delete(relayUrl)
-        this.relayUpdateCallback()
-    }
-
-    public async getRelays() {
-        if (!browser) return
-        const storedRelays = JSON.parse(localStorage.getItem("relays"))
-        if (!storedRelays) {
-            this.addRelay(`wss://nostr.chaker.net`)
-            this.addRelay("wss://eden.nostr.land")
-            this.addRelay("wss://nostr.orangepill.dev")
-            this.addRelay("wss://relay.damus.io")
-
-            await this.connectAll()
-            await this._fetchRelaysFromNostr();
-            await this.connectAll()
-        } else {
-            this._setRelaysFromList(storedRelays)
-            await this.connectAll()
-            await this._fetchRelaysFromNostr();
-            await this.connectAll()
-        }
-    }
-
-    private async _fetchRelaysFromNostr() {
-        const relayEvent = await this.getEvent({
-            kinds: [3],
-            authors: [this._pubkey]
-        })
-
-        if (relayEvent.content === "") return
-        localStorage.setItem("relays", relayEvent.content)
-        this._setRelaysFromList(JSON.parse(relayEvent.content))
-    }
-
-    private _setRelaysFromList(relays) {
-        this.relays.clear()
-        for (let [url, _] of Object.entries(relays)) {
-            if (this.relays.has(url)) continue
-            this.addRelay(url)
-        }
+    public getCurrentRelaysInArray(): string[] {
+        return this.relays.getRelayStatuses().map(([url, status]) => url);
     }
 
     //
@@ -236,7 +123,7 @@ export class NewNostr {
         event.tags.push(["client", "nosbin"])
         event.id = getEventHash(event)
         // @ts-ignore might exist we don't know
-        if (browser && window.nostr && this._privkey == "" && this.extension) {
+        if (browser && window.nostr && this._privkey == "") {
             // assume that we are using nostr extension
             // @ts-ignore
             event = await window.nostr.signEvent(event)
@@ -244,58 +131,9 @@ export class NewNostr {
         } else {
             event.sig = signEvent(event, this._privkey)
         }
-        await this._broadcastToAll(event)
+        await this.relays.publish(event, this.getCurrentRelaysInArray())
 
         return event.id!
-    }
-
-    private async _broadcastToAll(event: Event): Promise<void> {
-        const allRelays = [...this.relays].map(([_, relay]) => relay)
-        const connectedRelays = allRelays.filter((relay) => relay.status === 1)
-        for (let relay of connectedRelays) {
-            let pub = await relay.publish(event)
-            pub.on('ok', () => {
-                console.debug(`${relay.url} has accepted our event`)
-            })
-            pub.on('seen', () => {
-                console.debug(`we saw the event on ${relay.url}`)
-            })
-            pub.on('failed', (reason: any) => {
-                console.error(`failed to publish to ${relay.url}: ${reason}`)
-            })
-        }
-
-        return
-    }
-
-    public getEvent(filter: Filter): Promise<Event> {
-        return new Promise<Event>((resolve) => {
-            let subMapName: any
-            if (filter.ids) subMapName = filter.ids[0]
-            else if (filter.kinds) subMapName = filter.kinds[0]
-            this.subs.set(subMapName, new Map())
-            let subMap = this.subs.get(subMapName)
-            const gotEvent = (event) => {
-                for (let [_, sub] of subMap) {
-                    sub.unsub();
-                }
-                this.subs.delete(subMapName)
-                resolve(event)
-            }
-            for (let [_, relay] of this.relays) {
-                if (relay.status !== 1) break
-
-                let sub = relay.sub([filter])
-                subMap.set(relay.url, sub)
-                sub.on('event', (event: Event) => {
-                    console.debug('got event from ' + relay.url)
-                    gotEvent(event)
-                })
-                sub.on('eose', () => {
-                    sub.unsub()
-                })
-            }
-        })
     }
 }
 
