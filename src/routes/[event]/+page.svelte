@@ -22,16 +22,6 @@
     import { HighlightAuto, LineNumbers } from "svelte-highlight";
     import SvelteMarkdown from "svelte-markdown";
     import github from "svelte-highlight/styles/github-dark";
-    let event;
-    let hasData = false;
-    let content = ""
-
-    // fetch
-    async function fetch() {
-        console.debug($page.params.event)
-        event = await $nostr.relays.getEventById($page.params.event, $nostr.getCurrentRelaysInArray(), 100)
-        hasData = true
-    }
 </script>
 <svelte:head>
   <title>paste {$page.params.event} - nosbin</title>
@@ -41,19 +31,20 @@
   {@html github}
 </svelte:head>
 
-{#if hasData}
-  <h2>{event?.tags[0][1]}</h2>
-  Posted by: {event.pubkey} <br />
-  Posted on: {new Date(event.created_at * 1000)}
-  {#if event?.tags[0][1].endsWith(".md")}
-    <SvelteMarkdown source={event.content} />
-    {:else}
-    <HighlightAuto code={event.content} let:highlighted>
+{#await $nostr.getEventById($page.params.event, 1000)}
+  <h2>Fetching...</h2>
+  If data doesn't load, try refreshing.
+  {:then data}
+  <h2>{data?.tags[0][1]}</h2>
+  Posted by: {data.pubkey} <br />
+  Posted on: {new Date(data.created_at * 1000)}
+  {#if data?.tags[0][1].endsWith(".md")}
+    <SvelteMarkdown source={data.content} />
+  {:else}
+    <HighlightAuto code={data.content} let:highlighted>
       <LineNumbers {highlighted} hideBorder wrapLines />
     </HighlightAuto>
   {/if}
-  {:else}
-  <h2>Fetching...</h2>
-  If data doesn't load, try refreshing.
-  <button on:click={fetch}>Fetch</button>
-{/if}
+  {:catch error}
+  <span>error</span>
+{/await}

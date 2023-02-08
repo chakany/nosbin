@@ -135,6 +135,10 @@ export class NewNostr {
 
         return event.id!
     }
+
+    public getEventById(id: string, maxDelayms: number = 100): Promise<Event> {
+        return this.relays.getEventById(id, this.getCurrentRelaysInArray(), maxDelayms)
+    }
 }
 
 export default class Nostr {
