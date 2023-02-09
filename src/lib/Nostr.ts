@@ -38,7 +38,7 @@ export default class Nostr {
     constructor(relayUpdateCallback) {
         // Bootstrap Relays
         this.relays = new RelayPool([
-            "wss://nostr.chaker.net",
+            "wss://relay.nosbin.com",
             "wss://eden.nostr.land",
             "wss://relay.damus.io"
         ])
