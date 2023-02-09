@@ -60,13 +60,19 @@ export default class Nostr {
 
     public get pubkey(): string {
         if (!this._pubkey) return ""
-        return nip19.npubEncode(this._pubkey)
+        let encoded: string
+        try {
+            encoded = nip19.npubEncode(this._pubkey)
+        } catch (error) {
+            this._log.error(error)
+        }
+        return encoded
     }
     public set pubkey(input: string) {
         let key: string = input
         if(input.startsWith("npub")) {
             try {
-                key = nip19.decode(input)
+                key = nip19.decode(input).data
             } catch (error) {
                 return new Error("Failed to decode npub")
             }
@@ -74,16 +80,23 @@ export default class Nostr {
 
         this._pubkey = key
         if (browser) localStorage.setItem("keys", JSON.stringify([key, this._privkey]))
+        return input
     }
     public get privkey(): string {
         if (!this._privkey) return ""
-        return nip19.nsecEncode(this._privkey)
+        let encoded: string
+        try {
+            encoded = nip19.nsecEncode(this._privkey)
+        } catch (error) {
+            this._log.error(error)
+        }
+        return encoded
     }
     public set privkey(input: string) {
         let key: string = input
         if(input.startsWith("nsec")) {
             try {
-                key = nip19.decode(input)
+                key = nip19.decode(input).data
             } catch (error) {
                 return new Error("Failed to decode nsec")
             }
@@ -91,6 +104,7 @@ export default class Nostr {
 
         this._privkey = key
         if (browser) localStorage.setItem("keys", JSON.stringify([this._pubkey, key]))
+        return input
     }
 
     public generateKeys(): string[] {
@@ -107,7 +121,7 @@ export default class Nostr {
     }
 
     public getCurrentRelaysInArray(): string[] {
-        return this.relays.getRelayStatuses().map(([url, status]) => url);
+        return this.relays.getRelayStatuses().map(([url, _]) => url);
     }
 
     //

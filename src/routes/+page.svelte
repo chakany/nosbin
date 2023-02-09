@@ -31,7 +31,16 @@
   let mode = "edit";
 
   async function post() {
-    if ($nostr.pubkey === "" || !content || !filename) return;
+	  if (!filename) {
+		  alert("You must add a filename!");
+		  return;
+	  } else if (!content) {
+		  alert("You must add content to post!");
+		  return;
+	  } else if ($nostr.pubkey === "") {
+		  KeyModal.set(true)
+		  return;
+	  }
     const id = await $nostr.postNewEvent({
 		kind: 1050,
 		tags: [
