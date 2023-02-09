@@ -20,40 +20,53 @@
     import Textbox from "$lib/Textbox.svelte"
     import Button from "$lib/Button.svelte"
     import { goto } from "$app/navigation"
-    import { nostrInstance } from "$lib/store";
+    import { nostr } from "$lib/store";
     import { HighlightAuto, LineNumbers } from "svelte-highlight";
     import SvelteMarkdown from "svelte-markdown";
     import github from "svelte-highlight/styles/github-dark";
     import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome'
     import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+    import { KeyModal } from "$lib/ModalController";
 
     let content;
     let filename;
     let previewMode = false;
 
-    $: relay = $nostrInstance.relay.url
-
-    async function post() {
-        if ($nostrInstance.pubkey === "" || !content || !filename) return;
-        const id = await $nostrInstance.postFile(filename, content)
-        console.log(id)
-        if (id) {
-            await goto(`/${id}`, {replaceState: false})
-        }
+  async function post() {
+	  if (!filename) {
+		  alert("You must add a filename!");
+		  return;
+	  } else if (!content) {
+		  alert("You must add content to post!");
+		  return;
+	  } else if ($nostr.pubkey === "") {
+		  KeyModal.set(true)
+		  return;
+	  }
+    const id = await $nostr.postNewEvent({
+		kind: 1050,
+		tags: [
+			["filename", filename]
+		],
+		content: content
+	})
+    console.log(id);
+    if (id) {
+      await goto(`/${id}`, { replaceState: false });
     }
+  }
 </script>
 
 <svelte:head>
-    <title>Home - nosbin</title>
-    <meta property="og:title" content="Home - nosbin" />
-    <meta name="description" content="the decentralized pasting platform, built on nostr" />
-    <meta property="og:description" content="the decentralized pasting platform, built on nostr" />
-    {@html github}
+  <title>Home - nosbin</title>
+  <meta property="og:title" content="Home - nosbin" />
+  <meta name="description" content="the decentralized pasting platform, built on nostr" />
+  <meta property="og:description" content="the decentralized pasting platform, built on nostr" />
+  {@html github}
 </svelte:head>
 
 <h1>Welcome to nosbin</h1>
 <p>The original decentralized pasting platform, built on <a href="https://usenostr.org">nostr</a></p>
-<p>Current Relay: {relay}</p>
 
 <div class="flex flex-col">
     <div id="editbox" class="flex flex-col">
@@ -95,10 +108,5 @@
         border-bottom: none;
         border-color: #bbbbbb;
         border-width: thin;
-    }
-
-    .align {
-        margin-top: auto;
-        margin-bottom: auto;
     }
 </style>

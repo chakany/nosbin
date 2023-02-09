@@ -14,7 +14,7 @@ jobs:
         uses: theborakompanioni/nostr-action@v1
         with:
           key: ${{ secrets.NOSTR_KEY }}
-          relay: wss://nostr.chaker.net
+          relay: wss://relay.damus.io
           content: |
             ${{ github.actor }} pushed to branch ${{ github.ref_name }}
             https://github.com/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.event.after }}

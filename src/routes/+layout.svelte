@@ -16,48 +16,89 @@
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<script>
-    import Textbox from "$lib/Textbox.svelte";
-    import Button from "$lib/Button.svelte";
-    import Modal from "$lib/Modal.svelte"
-    let showKeyModal = false;
+<script lang="ts">
+  import Textbox from "$lib/Textbox.svelte";
+  import Button from "$lib/Button.svelte";
+  import Modal from "$lib/Modal.svelte";
+  import { KeyModal } from "$lib/ModalController";
 
     export const ssr = false;
     import "../app.postcss";
     import "@fontsource/montserrat";
     import "@fontsource/righteous";
     import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome'
-    import { faNoteSticky, faSun } from '@fortawesome/free-solid-svg-icons'
+    import { faNoteSticky, faSun, faServer } from '@fortawesome/free-solid-svg-icons'
     import { faGithub } from "@fortawesome/free-brands-svg-icons";
     import { config } from '@fortawesome/fontawesome-svg-core'
     import '@fortawesome/fontawesome-svg-core/styles.css' // Import the CSS
 
-    config.autoAddCss = false // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
+  config.autoAddCss = false // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
+  let showRelayModal = false;
 
-    // init connection
-    import { nostrInstance } from "$lib/store";
-    let pubkey = $nostrInstance.pubkey
-    let privkey = $nostrInstance.privkey
-    let extension = $nostrInstance.extension
+  // init connection
+  import { nostr } from "$lib/store";
+  import {onMount} from "svelte";
+  let inputtedPubkey = $nostr.pubkey;
+  let inputtedPrivkey = $nostr.privkey;
+  let countdown = 10
+  setInterval(() => {
+	  if (countdown > 0) countdown--
+	  else {
+		  updateState()
+		  countdown = 10
+	  }
+  }, 1000)
 
-    function genKeys() {
-        const keys = $nostrInstance.genKeys();
-        console.log(keys)
-        pubkey = keys[0];
-        privkey = keys[1];
-        extension = false
-    }
-    async function getPubkeyFromExtension() {
-        console.debug('window.nostr not detected')
-        if (!window.nostr) return;
-        pubkey = await window.nostr.getPublicKey();
-        privkey = ""
-        extension = pubkey !== ""
-    }
-    function saveKeys() {
-        $nostrInstance.setKeys(pubkey, privkey, extension)
-    }
-    $nostrInstance.connect()
+  // used to refresh relay state on update, like when an entry is added and deleted and such.
+  function updateState() {
+	  nostr.set($nostr)
+	  countdown = 10
+  }
+
+  function saveKeys() {
+	  $nostr.pubkey = inputtedPubkey
+	  $nostr.privkey = inputtedPrivkey
+  }
+
+  // needed because someone decided that nostr-tools relay connect() doesn't need a error handler in any way
+  // makes it impossible to catch initial connection errors
+  onMount(() => {
+	  window.addEventListener("unhandledrejection", () => {});
+  })
+
+  function updateRelays() {
+	  try {
+		  let unsub = $nostr.relays.subscribe(
+				  [
+					  {
+						  authors: [$nostr._pubkey],
+						  kinds: [3]
+					  }
+				  ],
+				  $nostr.getCurrentRelaysInArray(),
+				  (event) => {
+					  if (!event.content) return
+					  let returnedRelays = JSON.parse(event.content)
+					  let currentRelays = $nostr.getCurrentRelaysInArray()
+
+					  let returnedKeys = Object.keys(returnedRelays)
+					  returnedKeys.forEach((value) => {
+						  if (!currentRelays.includes(value)) $nostr.relays.addOrGetRelay(value)
+					  })
+					  currentRelays.forEach((value) => {
+						  if (!returnedKeys.includes(value) && value !== "wss://relay.nosbin.com") $nostr.relays.removeRelay(value)
+					  })
+					  unsub()
+					  updateRelays()
+				  },
+				  1000,
+				  undefined,
+				  {allowOlderEvents: true}
+		  )
+	  } catch (error) {}
+  }
+
+  if ($nostr._pubkey) updateRelays()
 </script>
 
 <div class="flex mx-20 my-7">
@@ -72,12 +113,15 @@
     </div>
     <div class="ml-auto flex gap-8">
         <span class="my-auto"><FontAwesomeIcon size="xl" icon="{faSun}"></FontAwesomeIcon></span>
-        <Button on:click={() => showKeyModal = true} class="my-auto cursor-pointer">Login</Button>
+        <span on:click={() => {showRelayModal = true}} class="my-auto cursor-pointer">
+            <FontAwesomeIcon size="xl" fade={false} icon={faServer} />
+        </span>
+        <Button on:click={() => KeyModal.set(true)} class="my-auto cursor-pointer">Login</Button>
     </div>
 </div>
 <div class="container mx-auto px-20">
-    {#if showKeyModal}
-        <Modal on:close={() => {saveKeys(); showKeyModal = false}}>
+    {#if $KeyModal}
+        <Modal on:close={() => {saveKeys(); KeyModal.set(false)}}>
             <h2 slot="header">
                 Manage Keys
             </h2>
@@ -85,25 +129,56 @@
             <div class="flex flex-col gap-5">
                 <div class="flex flex-col">
                     Public Key (hex)
-                    <Textbox bind:value={pubkey} placeholder="Type your public key..."></Textbox>
+                    <Textbox bind:value={inputtedPubkey} placeholder="Type your public key..."></Textbox>
                 </div>
                 <div class="flex flex-col">
                     Private Key (hex)
-                    <Textbox bind:value={privkey} placeholder="Type your private key..."></Textbox>
+                    <Textbox bind:value={inputtedPrivkey} placeholder="Type your private key..."></Textbox>
                 </div>
                 <div class="flex gap-5">
-                    <Button on:click="{genKeys}">Generate</Button>
-                    <Button on:click="{getPubkeyFromExtension}">Use Extension</Button>
+                    <Button on:click="{$nostr.generateKeys()}">Generate</Button>
+                    <Button on:click="{$nostr.getPubkeyFromExtension()}">Use Extension</Button>
                 </div>
                 <small><i>
-                    {#if pubkey && privkey === ""}
+                    {#if inputtedPubkey && inputtedPrivkey === ""}
                         You will be asked for your Private Key every time you want to sign an event.
-                    {:else if pubkey && privkey}
+                    {:else if inputtedPubkey && inputtedPrivkey}
                         Events will be signed automatically using the stored private key
                     {/if}
                 </i></small>
             </div>
         </Modal>
+        {:else if showRelayModal}
+        <Modal on:close="{() => {showRelayModal = false}}">
+	  <h2 slot="header">
+		View Relays
+	  </h2>
+		<div style="padding: 1vh 0">
+			Refreshing in {countdown}s
+		</div>
+
+	  <div class="flex flex-col" style="gap: 10px;">
+		{#each $nostr.relays.getRelayStatuses() as relay}
+		  <div class="flex">
+			<div class="my-auto mr-auto">
+			  {#if relay[1] === 0 || relay[1] === 2}
+				⚠️
+			  {:else if relay[1] === 1}
+				✅
+			  {:else if relay[1] === 3}
+				❌
+			  {:else}
+				❌
+			  {/if}
+			  {relay[0]}
+			</div>
+		  </div>
+		{/each}
+	  </div>
+		<div style="padding: 1vh 0">
+			<small>If your relays aren't appearing, make sure you added your pubkey and then refresh the page</small>
+		</div>
+	</Modal>
         {/if}
     <slot></slot>
 </div>

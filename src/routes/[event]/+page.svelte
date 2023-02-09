@@ -17,29 +17,11 @@
   -->
 
 <script>
-    import { nostrInstance } from "$lib/store";
+    import { nostr } from "$lib/store";
     import { page } from "$app/stores";
     import { HighlightAuto, LineNumbers } from "svelte-highlight";
     import SvelteMarkdown from "svelte-markdown";
     import github from "svelte-highlight/styles/github-dark";
-    let event;
-    let hasData = false;
-    let content = ""
-
-    // fetch
-    async function fetch() {
-        console.debug($page.params.event)
-        event = await $nostrInstance.getEvent($page.params.event)
-        hasData = true
-    }
-    // only used if client has already loaded.
-    if ($nostrInstance.relay.status === 1) {
-      fetch()
-    }
-    // used if client has not been loaded.
-    $nostrInstance.relay.on("connect", () => {
-        fetch()
-    })
 </script>
 <svelte:head>
   <title>paste {$page.params.event} - nosbin</title>
@@ -49,20 +31,20 @@
   {@html github}
 </svelte:head>
 
-{#if hasData}
-  <h2>{event?.tags[0][1]}</h2>
-  Posted by: {event.pubkey} <br />
-  Posted on: {new Date(event.created_at * 1000)}
-  <div style="height: 50vh">
-    {#if event?.tags[0][1].endsWith(".md")}
-      <SvelteMarkdown source={event.content} />
-    {:else}
-      <HighlightAuto code={event.content} let:highlighted>
-        <LineNumbers {highlighted} hideBorder wrapLines />
-      </HighlightAuto>
-    {/if}
-  </div>
-  {:else}
+{#await $nostr.getEventById($page.params.event, 1000)}
   <h2>Fetching...</h2>
   If data doesn't load, try refreshing.
-{/if}
+  {:then data}
+  <h2>{data?.tags[0][1]}</h2>
+  Posted by: {data.pubkey} <br />
+  Posted on: {new Date(data.created_at * 1000)}
+  {#if data?.tags[0][1].endsWith(".md")}
+    <SvelteMarkdown source={data.content} />
+  {:else}
+    <HighlightAuto code={data.content} let:highlighted>
+      <LineNumbers {highlighted} hideBorder wrapLines />
+    </HighlightAuto>
+  {/if}
+  {:catch error}
+  <span>error</span>
+{/await}

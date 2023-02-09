@@ -67,7 +67,7 @@
   <hr>
 
   <!-- svelte-ignore a11y-autofocus -->
-  <Button on:click={close}>Save</Button>
+  <Button on:click={close}>Done</Button>
 </div>
 
 <style>

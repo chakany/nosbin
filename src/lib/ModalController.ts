@@ -1,5 +1,5 @@
 /*
- * store.ts
+ * ModalController.ts
  * Copyright (c) 2023 Jack Chakany <jacany@chaker.net>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {writable} from "svelte/store";
-import Nostr from "$lib/Nostr"
-export const nostr = writable(new Nostr(() => {}))
+import { writable } from "svelte/store";
+
+export const KeyModal = writable(false)

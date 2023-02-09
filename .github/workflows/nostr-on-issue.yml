@@ -15,7 +15,7 @@ jobs:
         uses: theborakompanioni/nostr-action@v1
         with:
           key: ${{ secrets.NOSTR_KEY }}
-          relay: wss://nostr.chaker.net
+          relay: wss://relay.damus.io
           content: |
             Issue ${{ github.event.action }}
 
