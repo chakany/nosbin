@@ -20,7 +20,7 @@
   import Textbox from "$lib/Textbox.svelte";
   import Button from "$lib/Button.svelte";
   import Modal from "$lib/Modal.svelte";
-  import { KeyModal } from "$lib/ModalController";
+  import { KeyModal, RelayModal } from "$lib/ModalController";
 
     export const ssr = false;
     import "../app.postcss";
@@ -33,7 +33,6 @@
     import '@fortawesome/fontawesome-svg-core/styles.css' // Import the CSS
 
   config.autoAddCss = false // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
-  let showRelayModal = false;
 
   // init connection
   import { nostr } from "$lib/store";
@@ -113,7 +112,7 @@
     </div>
     <div class="ml-auto flex gap-8">
         <span class="my-auto"><FontAwesomeIcon size="xl" icon="{faSun}"></FontAwesomeIcon></span>
-        <span on:click={() => {showRelayModal = true}} class="my-auto cursor-pointer">
+        <span on:click={() => RelayModal.set(true)} class="my-auto cursor-pointer">
             <FontAwesomeIcon size="xl" fade={false} icon={faServer} />
         </span>
         <Button on:click={() => KeyModal.set(true)} class="my-auto cursor-pointer">Login</Button>
@@ -148,8 +147,8 @@
                 </i></small>
             </div>
         </Modal>
-        {:else if showRelayModal}
-        <Modal on:close="{() => {showRelayModal = false}}">
+        {:else if $RelayModal}
+        <Modal on:close="{() => RelayModal.set(false)}">
 	  <h2 slot="header">
 		View Relays
 	  </h2>
