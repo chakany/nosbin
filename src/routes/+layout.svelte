@@ -121,7 +121,7 @@
 <div class="container mx-auto px-20">
     {#if $KeyModal}
         <Modal on:close={() => {saveKeys(); KeyModal.set(false)}}>
-            <h2 slot="header">
+            <h2 class="text-2xl" slot="header">
                 Manage Keys
             </h2>
 
@@ -134,9 +134,9 @@
                     Private Key (hex)
                     <Textbox bind:value={inputtedPrivkey} placeholder="Type your private key..."></Textbox>
                 </div>
-                <div class="flex gap-5">
+                <div>
                     <Button on:click="{$nostr.generateKeys()}">Generate</Button>
-                    <Button on:click="{$nostr.getPubkeyFromExtension()}">Use Extension</Button>
+                    <Button on:click="{$nostr.getPubkeyFromExtension()}">NIP-07</Button>
                 </div>
                 <small><i>
                     {#if inputtedPubkey && inputtedPrivkey === ""}
@@ -149,13 +149,12 @@
         </Modal>
         {:else if $RelayModal}
         <Modal on:close="{() => RelayModal.set(false)}">
-	  <h2 slot="header">
-		View Relays
-	  </h2>
-		<div style="padding: 1vh 0">
-			Refreshing in {countdown}s
-		</div>
-
+            <div slot="header">
+                <h2 class="text-2xl">
+                    View Relays
+                </h2>
+                <span>Refreshing in {countdown}s</span>
+            </div>
 	  <div class="flex flex-col" style="gap: 10px;">
 		{#each $nostr.relays.getRelayStatuses() as relay}
 		  <div class="flex">

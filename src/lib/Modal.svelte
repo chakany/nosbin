@@ -62,9 +62,9 @@
 <div transition:blur={{ duration: 350 }} class="modal-background" on:click={close}>
   <div transition:scale={{ duration: 350 }} class="modaltest" role="dialog" aria-modal="true" bind:this={modal}>
     <slot name="header"></slot>
-    <hr>
+    <hr class="my-2">
     <slot></slot>
-    <hr>
+    <hr class="my-2">
 
     <!-- svelte-ignore a11y-autofocus -->
     <Button on:click={close}>Done</Button>
