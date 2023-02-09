@@ -18,6 +18,7 @@
 
 <script>
   import { createEventDispatcher, onDestroy } from 'svelte';
+  import { blur, scale } from "svelte/transition"
   import Button from "$lib/Button.svelte"
 
   const dispatch = createEventDispatcher();
@@ -58,17 +59,19 @@
 
 <svelte:window on:keydown={handle_keydown}/>
 
-<div class="modal-background" on:click={close}></div>
+<div transition:blur={{ duration: 350 }} class="modal-background" on:click={close}>
+  <div transition:scale={{ duration: 350 }} class="modaltest" role="dialog" aria-modal="true" bind:this={modal}>
+    <slot name="header"></slot>
+    <hr>
+    <slot></slot>
+    <hr>
 
-<div class="modaltest" role="dialog" aria-modal="true" bind:this={modal}>
-  <slot name="header"></slot>
-  <hr>
-  <slot></slot>
-  <hr>
+    <!-- svelte-ignore a11y-autofocus -->
+    <Button on:click={close}>Done</Button>
+  </div>
 
-  <!-- svelte-ignore a11y-autofocus -->
-  <Button on:click={close}>Done</Button>
 </div>
+
 
 <style>
     .modal-background {
@@ -77,7 +80,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(3px);
     }
 
     .modaltest {
@@ -91,6 +94,7 @@
         transform: translate(-50%,-50%);
         padding: 1em;
         border-radius: 0.2em;
-        background: #1f1f1f;
+      outline: white solid 2px;
+        background: black;
     }
 </style>
