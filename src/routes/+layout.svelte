@@ -135,8 +135,8 @@
                     <Textbox bind:value={inputtedPrivkey} placeholder="Type your private key..."></Textbox>
                 </div>
                 <div>
-                    <Button on:click="{$nostr.generateKeys()}">Generate</Button>
-                    <Button on:click="{$nostr.getPubkeyFromExtension()}">NIP-07</Button>
+                    <Button on:click={$nostr.generateKeys}>Generate</Button>
+                    <Button on:click={$nostr.getPubkeyFromExtension}>NIP-07</Button>
                 </div>
                 <small><i>
                     {#if inputtedPubkey && inputtedPrivkey === ""}
