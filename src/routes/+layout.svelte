@@ -21,6 +21,7 @@
   import Button from "$lib/Button.svelte";
   import Modal from "$lib/Modal.svelte";
   import { KeyModal, RelayModal } from "$lib/ModalController";
+  import { Author } from "nostr-relaypool"
 
     export const ssr = false;
     import "../app.postcss";
@@ -39,6 +40,11 @@
   import {onMount} from "svelte";
   let inputtedPubkey = $nostr.pubkey;
   let inputtedPrivkey = $nostr.privkey;
+  let account = new Author($nostr.relays, $nostr.getCurrentRelaysInArray(), $nostr._pubkey)
+  let profile = {}
+  account.metaData((event) => {
+      updateProfile(event)
+  }, 1000)
   let countdown = 10
   setInterval(() => {
 	  if (countdown > 0) countdown--
@@ -54,10 +60,23 @@
 	  countdown = 10
   }
 
+  function updateProfile(event) {
+      let data = JSON.parse(event.content)
+      if (!data.name) return
+      console.log(data.picture)
+
+      profile = data
+  }
+
   function saveKeys() {
 	  $nostr.pubkey = inputtedPubkey
 	  $nostr.privkey = inputtedPrivkey
+      account = new Author($nostr.relays, $nostr.getCurrentRelaysInArray(), $nostr._pubkey)
+      account.metaData((event) => {
+          updateProfile(event)
+      }, 1000)
   }
+
 
   // needed because someone decided that nostr-tools relay connect() doesn't need a error handler in any way
   // makes it impossible to catch initial connection errors
@@ -115,7 +134,12 @@
         <span on:click={() => RelayModal.set(true)} class="my-auto cursor-pointer">
             <FontAwesomeIcon size="xl" fade={false} icon={faServer} />
         </span>
-        <Button on:click={() => KeyModal.set(true)} class="my-auto cursor-pointer">Login</Button>
+
+        {#if inputtedPubkey}
+            <img on:click={() => KeyModal.set(true)} class="my-auto cursor-pointer w-12 rounded" src={profile.picture ? profile.picture : `https://robohash.org/${inputtedPubkey}?sets=1`} alt="Profile Picture" />
+        {:else}
+            <Button on:click={() => KeyModal.set(true)} class="my-auto cursor-pointer">Login</Button>
+        {/if}
     </div>
 </div>
 <div class="container mx-auto px-20">
@@ -135,8 +159,8 @@
                     <Textbox bind:value={inputtedPrivkey} placeholder="Type your private key..."></Textbox>
                 </div>
                 <div>
-                    <Button on:click={$nostr.generateKeys}>Generate</Button>
-                    <Button on:click={$nostr.getPubkeyFromExtension}>NIP-07</Button>
+                    <Button on:click={() => [inputtedPubkey, inputtedPrivkey] = $nostr.generateKeys()}>Generate</Button>
+                    <Button on:click={async () => { inputtedPubkey = await $nostr.getPubkeyFromExtension(); inputtedPrivkey = "" }}>NIP-07</Button>
                 </div>
                 <small><i>
                     {#if inputtedPubkey && inputtedPrivkey === ""}
