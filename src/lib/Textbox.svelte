@@ -28,7 +28,7 @@
 {/if}
 <style>
     .input {
-        border-radius: 10px;
+        border-radius: 0.25rem;
         border-style: solid;
         border-color: #bbbbbb;
         border-width: thin;

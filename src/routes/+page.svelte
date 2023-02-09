@@ -98,14 +98,16 @@
     </div>
 </div>
 
-<Button class="mt-5" on:click={post}>Post</Button>
-<small>Make sure you inputted or generated your keys before attempting to post! Click the profile icon in the top right to get started.</small>
+<div class="mt-3">
+    <Button on:click={post}>Post</Button>
+    <small>Make sure you inputted or generated your keys before attempting to post! Click the profile icon in the top right to get started.</small>
+</div>
+
 
 <style>
     #editbox {
-        border-radius: 6px;
+        border-radius: 0.25rem;
         border-style: solid;
-        border-bottom: none;
         border-color: #bbbbbb;
         border-width: thin;
     }
