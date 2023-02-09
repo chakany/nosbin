@@ -84,7 +84,7 @@
 						  if (!currentRelays.includes(value)) $nostr.relays.addOrGetRelay(value)
 					  })
 					  currentRelays.forEach((value) => {
-						  if (!returnedKeys.includes(value)) $nostr.relays.removeRelay(value)
+						  if (!returnedKeys.includes(value) && value !== "wss://relay.nosbin.com") $nostr.relays.removeRelay(value)
 					  })
 					  unsub()
 					  updateRelays()
