@@ -61,7 +61,37 @@
 	  window.addEventListener("unhandledrejection", () => {});
   })
 
-  let relayField = "";
+  function updateRelays() {
+	  let unsub = $nostr.relays.subscribe(
+			  [
+				  {
+					  authors: [$nostr._pubkey],
+					  kinds: [3]
+				  }
+			  ],
+			  $nostr.getCurrentRelaysInArray(),
+			  (event) => {
+				  if (!event.content) return
+				  let returnedRelays = JSON.parse(event.content)
+				  let currentRelays = $nostr.getCurrentRelaysInArray()
+
+				  let returnedKeys = Object.keys(returnedRelays)
+				  returnedKeys.forEach((value) => {
+					  if (!currentRelays.includes(value)) $nostr.relays.addOrGetRelay(value)
+				  })
+				  currentRelays.forEach((value) => {
+					  if (!returnedKeys.includes(value)) $nostr.relays.removeRelay(value)
+				  })
+				  unsub()
+				  updateRelays()
+			  },
+			  1000,
+			  undefined,
+			  {allowOlderEvents: true}
+	  )
+  }
+
+  updateRelays()
 </script>
 
 <div class="header">
@@ -119,9 +149,12 @@
   {:else if showRelayModal}
 	<Modal on:close="{() => {showRelayModal = false}}">
 	  <h2 slot="header">
-		Manage Relays
+		View Relays
 	  </h2>
-		Refreshing in {countdown}s
+		<div style="padding: 1vh 0">
+			Refreshing in {countdown}s
+		</div>
+
 	  <div class="flex column" style="gap: 10px;">
 		{#each $nostr.relays.getRelayStatuses() as relay}
 		  <div class="flex">
@@ -137,14 +170,12 @@
 			  {/if}
 			  {relay[0]}
 			</div>
-			<Button class="align" on:click={() =>{ $nostr.relays.removeRelay(relay[0]); updateState() }}>Remove</Button>
 		  </div>
 		{/each}
-		<div class="flex" style="gap: 15px">
-		  <Textbox bind:value={relayField} placeholder="wss://"></Textbox>
-		  <Button on:click={() => { $nostr.relays.addOrGetRelay(relayField); updateState() }}>Add</Button>
-		</div>
 	  </div>
+		<div style="padding: 1vh 0">
+			<small>If your relays aren't appearing, make sure you added your pubkey and then refresh the page</small>
+		</div>
 	</Modal>
   {/if}
   <slot></slot>

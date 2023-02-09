@@ -30,7 +30,7 @@ import { RelayPool } from "nostr-relaypool";
 
 export default class Nostr {
     public relays: RelayPool
-    private _pubkey: string
+    public _pubkey: string
     private _privkey: string
     private _log: Logger
     private relayUpdateCallback: any;
