@@ -59,8 +59,8 @@
 
 <svelte:window on:keydown={handle_keydown}/>
 
-<div transition:blur={{ duration: 350 }} class="modal-background" on:click={close}>
-  <div transition:scale={{ duration: 350 }} class="modaltest" role="dialog" aria-modal="true" bind:this={modal}>
+<div transition:blur={{ duration: 350 }} class="fixed top-0 left-0 w-full h-full backdrop-blur" on:click={close}>
+  <div transition:scale={{ duration: 350 }} class="modaltest drop-shadow-2xl" role="dialog" aria-modal="true" bind:this={modal}>
     <slot name="header"></slot>
     <hr class="my-2">
     <slot></slot>
@@ -74,15 +74,6 @@
 
 
 <style>
-    .modal-background {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-      backdrop-filter: blur(3px);
-    }
-
     .modaltest {
         position: absolute;
         left: 50%;
