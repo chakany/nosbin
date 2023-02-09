@@ -24,6 +24,7 @@
   import { HighlightAuto, LineNumbers } from "svelte-highlight";
   import SvelteMarkdown from "svelte-markdown";
   import github from "svelte-highlight/styles/github-dark";
+  import { KeyModal } from "$lib/ModalController";
 
   let content;
   let filename;
@@ -81,7 +82,6 @@
 	{/if}
   </div>
 </div>
-
 <Button style="margin-top: 15px" on:click={post}>Post</Button>
 <small>Make sure you inputted or generated your keys before attempting to post! Click the profile icon in the top right
   to get started.</small>
