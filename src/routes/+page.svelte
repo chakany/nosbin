@@ -17,79 +17,83 @@
   -->
 
 <script>
-    import Textbox from "$lib/Textbox.svelte"
-    import Button from "$lib/Button.svelte"
-    import { goto } from "$app/navigation"
-    import { nostrInstance } from "$lib/store";
-    import { HighlightAuto, LineNumbers } from "svelte-highlight";
-    import SvelteMarkdown from "svelte-markdown";
-    import github from "svelte-highlight/styles/github-dark";
-    import { KeyModal } from "$lib/ModalController";
+  import Textbox from "$lib/Textbox.svelte";
+  import Button from "$lib/Button.svelte";
+  import { goto } from "$app/navigation";
+  import { nostr } from "$lib/store";
+  import { HighlightAuto, LineNumbers } from "svelte-highlight";
+  import SvelteMarkdown from "svelte-markdown";
+  import github from "svelte-highlight/styles/github-dark";
+  import { KeyModal } from "$lib/ModalController";
 
-    let content;
-    let filename;
-    let mode = "edit";
+  let content;
+  let filename;
+  let mode = "edit";
 
-    $: relay = $nostrInstance.relay.url
-
-    async function post() {
-        if (!filename) {
-            alert("You must add a filename!");
-            return;
-        } else if (!content) {
-            alert("You must add content to post!");
-            return;
-        } else if ($nostrInstance.pubkey === "") {
-            $KeyModal = true;
-            return;
-        }
-        const id = await $nostrInstance.postFile(filename, content)
-        console.log(id)
-        if (id) {
-            await goto(`/${id}`, {replaceState: false})
-        }
+  async function post() {
+	  if (!filename) {
+		  alert("You must add a filename!");
+		  return;
+	  } else if (!content) {
+		  alert("You must add content to post!");
+		  return;
+	  } else if ($nostr.pubkey === "") {
+		  KeyModal.set(true)
+		  return;
+	  }
+    const id = await $nostr.postNewEvent({
+		kind: 1050,
+		tags: [
+			["filename", filename]
+		],
+		content: content
+	})
+    console.log(id);
+    if (id) {
+      await goto(`/${id}`, { replaceState: false });
     }
+  }
 </script>
 
 <svelte:head>
-    <title>Home - nosbin</title>
-    <meta property="og:title" content="Home - nosbin" />
-    <meta name="description" content="the decentralized pasting platform, built on nostr" />
-    <meta property="og:description" content="the decentralized pasting platform, built on nostr" />
-    {@html github}
+  <title>Home - nosbin</title>
+  <meta property="og:title" content="Home - nosbin" />
+  <meta name="description" content="the decentralized pasting platform, built on nostr" />
+  <meta property="og:description" content="the decentralized pasting platform, built on nostr" />
+  {@html github}
 </svelte:head>
 
 <h1>Welcome to nosbin</h1>
 <p>The decentralized pasting platform, built on <a href="https://usenostr.org">nostr</a></p>
 <b>⚠️THIS APP IS A WORK IN PROGRESS ⚠️</b>
-<p>Current Relay: {relay}</p>
 
 <div style="display: flex; flex-direction: column">
-    <div id="editbox" style="display: flex; flex-direction: column">
-        <div style="display: flex; margin: 1vh 1vw">
-            <Textbox class="align" bind:value={filename} type="input" style="width: 15vw" placeholder="README.md" />
-            <div class="align" style="display: flex; margin-left: 1vw; gap: 10px">
-                <Button on:click={() => mode = "edit"}>Edit</Button>
-                <Button on:click={() => mode = "preview"}>Preview</Button>
-            </div>
-        </div>
-        {#if mode === "edit"}
-            <Textbox bind:value={content} type="textarea" style="height: 50vh;" placeholder="Write your post..." />
-            {:else if mode === "preview"}
-            {#if filename.endsWith(".md")}
-                <div style="margin: 1vh 2vw">
-                    <SvelteMarkdown  source={content} />
-                </div>
-            {:else}
-                <HighlightAuto code={content} let:highlighted>
-                    <LineNumbers {highlighted} hideBorder wrapLines />
-                </HighlightAuto>
-            {/if}
-        {/if}
-    </div>
+  <div id="editbox" style="display: flex; flex-direction: column">
+	<div style="display: flex; margin: 1vh 1vw">
+	  <Textbox class="align" bind:value={filename} type="input" style="width: 15vw" placeholder="README.md" />
+	  <div class="align" style="display: flex; margin-left: 1vw; gap: 10px">
+		<Button on:click={() => mode = "edit"}>Edit</Button>
+		<Button on:click={() => mode = "preview"}>Preview</Button>
+	  </div>
+	</div>
+	{#if mode === "edit"}
+	  <Textbox bind:value={content} type="textarea" style="height: 50vh;" placeholder="Write your post..." />
+	{:else if mode === "preview"}
+	  {#if filename.endsWith(".md")}
+		<div style="margin: 1vh 2vw">
+		  <SvelteMarkdown source={content} />
+		</div>
+	  {:else}
+		<HighlightAuto code={content} let:highlighted>
+		  <LineNumbers {highlighted} hideBorder wrapLines />
+		</HighlightAuto>
+	  {/if}
+	{/if}
+  </div>
 </div>
 <Button style="margin-top: 15px" on:click={post}>Post</Button>
-<small>Make sure you inputted or generated your keys before attempting to post! Click the profile icon in the top right to get started.</small>
+<small>Make sure you inputted or generated your keys before attempting to post! Click the profile icon in the top right
+  to get started.</small>
 
 <style>
     #editbox {

@@ -16,98 +16,179 @@
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<script>
-    import Textbox from "$lib/Textbox.svelte";
-    import Button from "$lib/Button.svelte";
-    import Modal from "$lib/Modal.svelte"
-    import { KeyModal } from "$lib/ModalController";
+<script lang="ts">
+  import Textbox from "$lib/Textbox.svelte";
+  import Button from "$lib/Button.svelte";
+  import Modal from "$lib/Modal.svelte";
+  import { KeyModal } from "$lib/ModalController";
 
-    export const ssr = false;
-    import "@fontsource/montserrat";
-    import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome'
-    import { faNoteSticky, faUser } from '@fortawesome/free-solid-svg-icons'
-    import { faGithub } from "@fortawesome/free-brands-svg-icons";
-    import { config } from '@fortawesome/fontawesome-svg-core'
-    import '@fortawesome/fontawesome-svg-core/styles.css' // Import the CSS
-    config.autoAddCss = false // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
+  let showRelayModal = false;
 
-    // init connection
-    import { nostrInstance } from "$lib/store";
-    let pubkey = $nostrInstance.pubkey
-    let privkey = $nostrInstance.privkey
-    let extension = $nostrInstance.extension
+  export const ssr = false;
+  import "@fontsource/montserrat";
+  import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
+  import { faNoteSticky, faUser, faServer } from "@fortawesome/free-solid-svg-icons";
+  import { faGithub } from "@fortawesome/free-brands-svg-icons";
+  import { config } from "@fortawesome/fontawesome-svg-core";
+  import "@fortawesome/fontawesome-svg-core/styles.css"; // Import the CSS
+  config.autoAddCss = false; // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
 
-    function genKeys() {
-        const keys = $nostrInstance.genKeys();
-        console.log(keys)
-        pubkey = keys[0];
-        privkey = keys[1];
-        extension = false
-    }
-    async function getPubkeyFromExtension() {
-        console.debug('window.nostr not detected')
-        if (!window.nostr) return;
-        pubkey = await window.nostr.getPublicKey();
-        privkey = ""
-        extension = pubkey !== ""
-    }
-    function saveKeys() {
-        $nostrInstance.setKeys(pubkey, privkey, extension)
-    }
-    $nostrInstance.connect()
+  // init connection
+  import { nostr } from "$lib/store";
+  import {onMount} from "svelte";
+  let inputtedPubkey = $nostr.pubkey;
+  let inputtedPrivkey = $nostr.privkey;
+  let countdown = 10
+  setInterval(() => {
+	  if (countdown > 0) countdown--
+	  else {
+		  updateState()
+		  countdown = 10
+	  }
+  }, 1000)
+
+  // used to refresh relay state on update, like when an entry is added and deleted and such.
+  function updateState() {
+	  nostr.set($nostr)
+	  countdown = 10
+  }
+
+  function saveKeys() {
+	  $nostr.pubkey = inputtedPubkey
+	  $nostr.privkey = inputtedPrivkey
+  }
+
+  // needed because someone decided that nostr-tools relay connect() doesn't need a error handler in any way
+  // makes it impossible to catch initial connection errors
+  onMount(() => {
+	  window.addEventListener("unhandledrejection", () => {});
+  })
+
+  function updateRelays() {
+	  try {
+		  let unsub = $nostr.relays.subscribe(
+				  [
+					  {
+						  authors: [$nostr._pubkey],
+						  kinds: [3]
+					  }
+				  ],
+				  $nostr.getCurrentRelaysInArray(),
+				  (event) => {
+					  if (!event.content) return
+					  let returnedRelays = JSON.parse(event.content)
+					  let currentRelays = $nostr.getCurrentRelaysInArray()
+
+					  let returnedKeys = Object.keys(returnedRelays)
+					  returnedKeys.forEach((value) => {
+						  if (!currentRelays.includes(value)) $nostr.relays.addOrGetRelay(value)
+					  })
+					  currentRelays.forEach((value) => {
+						  if (!returnedKeys.includes(value)) $nostr.relays.removeRelay(value)
+					  })
+					  unsub()
+					  updateRelays()
+				  },
+				  1000,
+				  undefined,
+				  {allowOlderEvents: true}
+		  )
+	  } catch (error) {}
+  }
+
+  if ($nostr._pubkey) updateRelays()
 </script>
 
 <div class="header">
-    <!--suppress JSUnresolvedVariable -->
-    <div class="align">
-        <a style="text-decoration: none;" href="/">
-            <FontAwesomeIcon class="align" style="margin-right: 6px" size="2xl" icon={faNoteSticky} />
-            <span class="align" id="name">nosbin</span>
-        </a>
-        <!-- svelte-ignore missing-declaration -->
-        v{_version_}
-    </div>
-    <div class="align flex" style="margin-left: auto; gap: 20px;">
-        <span class="align"></span>
-        <a class="align" href="https://github.com/jacany/nosbin"><FontAwesomeIcon size="xl" icon={faGithub} /></a>
-        <div on:click={() => $KeyModal = true} class="align" style="cursor: pointer;">
-            <FontAwesomeIcon size="xl" icon={faUser} />
-        </div>
-    </div>
+  <!--suppress JSUnresolvedVariable -->
+  <div class="align">
+	<a style="text-decoration: none;" href="/">
+	  <FontAwesomeIcon class="align" style="margin-right: 6px" size="2xl" icon={faNoteSticky} />
+	  <span class="align" id="name">nosbin</span>
+	</a>
+	<!-- svelte-ignore missing-declaration -->
+	v{_version_}
+  </div>
+  <div class="align flex" style="margin-left: auto; gap: 20px;">
+	<span class="align"></span>
+	<a class="align" href="https://github.com/jacany/nosbin">
+	  <FontAwesomeIcon size="xl" icon={faGithub} />
+	</a>
+	<div on:click={() => {showRelayModal = true}} class="align" style="cursor: pointer;">
+		<FontAwesomeIcon size="xl" fade={false} icon={faServer} />
+	</div>
+	<div on:click={() => KeyModal.set(true)} class="align" style="cursor: pointer;">
+	  <FontAwesomeIcon size="xl" icon={faUser} />
+	</div>
+  </div>
 </div>
 <div class="container">
-    {#if $KeyModal}
-        <Modal on:close="{() => {saveKeys(); $KeyModal = false}}">
-            <h2 slot="header">
-                Manage Keys
-            </h2>
+  {#if $KeyModal}
+	<Modal on:close="{() => {saveKeys(); KeyModal.set(false); updateRelays()}}">
+	  <h2 slot="header">
+		Manage Keys
+	  </h2>
 
-            <div class="flex column" style="gap: 10px;">
-                <div class="flex column" >
-                    Public Key (hex)
-                    <Textbox bind:value={pubkey} placeholder="Type your public key..." />
-                </div>
-                <div class="flex column" >
-                    Private Key (hex)
-                    <Textbox bind:value={privkey} placeholder="Type your private key..." />
-                </div>
-                <div class="flex" style="gap: 10px">
-                    <Button on:click={genKeys}>Generate</Button>
-                    <Button on:click={getPubkeyFromExtension}>Use Extension</Button>
-                </div>
-                <small><i>
-                    {#if pubkey && privkey === ""}
-                        You will be asked for your Private Key every time you want to sign an event.
-                    {:else if pubkey && privkey}
-                        Events will be signed automatically using the stored private key
-                    {/if}
-                </i></small>
-            </div>
-        </Modal>
-        {/if}
-    <slot></slot>
+	  <div class="flex column" style="gap: 10px;">
+		<div class="flex column">
+		  Public Key (bech32 or hex)
+		  <Textbox bind:value={inputtedPubkey} placeholder="npub..." />
+		</div>
+		<div class="flex column">
+		  Private Key (bech32 or hex)
+		  <Textbox bind:value={inputtedPrivkey} placeholder="nsec..." />
+		</div>
+		<div class="flex" style="gap: 10px;">
+		  <Button on:click={() => [inputtedPubkey, inputtedPrivkey] = $nostr.generateKeys()}>Generate</Button>
+		  <Button on:click={async () => { inputtedPubkey = await $nostr.getPubkeyFromExtension(); inputtedPrivkey = "" }}>Use Extension</Button>
+		</div>
+		<small><i>
+		  {#if inputtedPubkey && inputtedPrivkey === ""}
+			You will be asked for your Private Key every time you want to sign an event.
+		  {:else if inputtedPubkey && inputtedPrivkey}
+			Events will be signed automatically using the stored private key
+		  {/if}
+		</i></small>
+	  </div>
+	</Modal>
+  {:else if showRelayModal}
+	<Modal on:close="{() => {showRelayModal = false}}">
+	  <h2 slot="header">
+		View Relays
+	  </h2>
+		<div style="padding: 1vh 0">
+			Refreshing in {countdown}s
+		</div>
+
+	  <div class="flex column" style="gap: 10px;">
+		{#each $nostr.relays.getRelayStatuses() as relay}
+		  <div class="flex">
+			<div class="align" style="margin-right: auto">
+			  {#if relay[1] === 0 || relay[1] === 2}
+				⚠️
+			  {:else if relay[1] === 1}
+				✅
+			  {:else if relay[1] === 3}
+				❌
+			  {:else}
+				❌
+			  {/if}
+			  {relay[0]}
+			</div>
+		  </div>
+		{/each}
+	  </div>
+		<div style="padding: 1vh 0">
+			<small>If your relays aren't appearing, make sure you added your pubkey and then refresh the page</small>
+		</div>
+	</Modal>
+  {/if}
+  <slot></slot>
 </div>
-Made by <a href="https://jacany.com">Jack Chakany</a>; Get in contact: npub1s8gvenj9j87yux0raa6j52cq8mer4xrvkv08sd020kxhektdgl4qu7ldqa; This website is licensed under the <a href="https://github.com/jacany/nosbin/blob/master/LICENSE">AGPL v3.0</a>
+z
+Made by <a href="https://jacany.com">Jack
+  Chakany</a>; Get in contact: npub1s8gvenj9j87yux0raa6j52cq8mer4xrvkv08sd020kxhektdgl4qu7ldqa; This website is licensed under the
+<a href="https://github.com/jacany/nosbin/blob/master/LICENSE">AGPL v3.0</a>
 
 <style>
     :global(body) {
@@ -115,26 +196,33 @@ Made by <a href="https://jacany.com">Jack Chakany</a>; Get in contact: npub1s8gv
         background-color: #111111;
         color: white;
     }
+
     :global(a) {
         color: white;
     }
+
     .header {
         display: flex;
         margin: 20px 5vw
     }
+
     .flex {
         display: flex;
     }
+
     .column {
         flex-direction: column;
     }
+
     .align {
         margin-top: auto;
         margin-bottom: auto;
     }
+
     #name {
         font-size: 1.5em;
     }
+
     .container {
         margin: 3vh 5vw;
     }

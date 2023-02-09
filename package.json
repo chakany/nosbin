@@ -1,6 +1,6 @@
 {
 	"name": "nosbin",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"private": true,
 	"license": "AGPL-3.0-or-later",
 	"scripts": {
@@ -29,7 +29,7 @@
 		"tslib": "^2.4.1",
 		"typescript": "^4.9.3",
 		"vite": "^4.0.0",
-		"websocket-polyfill": "^0.0.3"
+		"ws": "^8.12.0"
 	},
 	"type": "module",
 	"dependencies": {
@@ -38,6 +38,7 @@
 		"@fortawesome/free-brands-svg-icons": "^6.2.1",
 		"@fortawesome/free-solid-svg-icons": "^6.2.1",
 		"@fortawesome/svelte-fontawesome": "^0.2.0",
+		"nostr-relaypool": "^0.4.9",
 		"nostr-tools": "git+https://github.com/nbd-wtf/nostr-tools.git#cb05ee188f18e13f5c93b0c1ca40afb482e12b10",
 		"svelte-markdown": "^0.2.3"
 	}
