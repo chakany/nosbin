@@ -27,7 +27,7 @@
 	import "@fontsource/montserrat";
 	import "@fontsource/righteous";
 	import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
-	import { faNoteSticky, faSun, faServer } from "@fortawesome/free-solid-svg-icons";
+	import { faNoteSticky, faServer } from "@fortawesome/free-solid-svg-icons";
 	import { faGithub } from "@fortawesome/free-brands-svg-icons";
 	import { config } from "@fortawesome/fontawesome-svg-core";
 	import "@fortawesome/fontawesome-svg-core/styles.css"; // Import the CSS
@@ -122,15 +122,12 @@
 <div class="mx-10 md:mx-20 my-7 flex">
 	<!--suppress JSUnresolvedVariable -->
 	<div class="my-auto">
-		<a class="md:text-2xl" style="text-decoration: none;" href="/">
+		<a class="text-xl md:text-2xl" style="text-decoration: none;" href="/">
 			<FontAwesomeIcon class="my-auto mr-1" size="2xl" icon={faNoteSticky} />
 			<span class="name my-auto" style>nosbin</span>
 		</a>
-		<!-- svelte-ignore missing-declaration -->
-		<small>v{_version_}</small>
 	</div>
 	<div class="ml-auto my-auto flex gap-8">
-		<span class="my-auto"><FontAwesomeIcon size="xl" icon={faSun} /></span>
 		<span on:click={() => RelayModal.set(true)} class="my-auto cursor-pointer">
 			<FontAwesomeIcon size="xl" fade={false} icon={faServer} />
 		</span>
@@ -255,7 +252,7 @@
 
 <style lang="postcss">
 	:global(html) {
-		@apply text-sm md:text-base;
+		@apply text-base;
 	}
 	:global(body) {
 		font-family: "Montserrat", sans-serif;
