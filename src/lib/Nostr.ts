@@ -160,7 +160,7 @@ export default class Nostr {
 		return event.id!;
 	}
 
-	public getEventById(id: string, maxDelayms: number = 100): Promise<Event> {
+	public getEventById(id: string, maxDelayms = 100): Promise<Event> {
 		return this.relays.getEventById(id, this.getCurrentRelaysInArray(), maxDelayms);
 	}
 }
