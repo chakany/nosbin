@@ -33,19 +33,17 @@ export default class Nostr {
 	public _pubkey: string;
 	private _privkey: string;
 	private _log: Logger;
-	private relayUpdateCallback: any;
 
-	constructor(relayUpdateCallback) {
+	constructor() {
 		// Bootstrap Relays
 		this.relays = new RelayPool([
 			"wss://relay.nosbin.com",
 			"wss://eden.nostr.land",
 			"wss://relay.damus.io",
 		]);
-		this.relayUpdateCallback = relayUpdateCallback;
 		this._log = new Logger("nostr");
 		if (browser) {
-			let storedKeys = JSON.parse(localStorage.getItem("keys"));
+			const storedKeys = JSON.parse(localStorage.getItem("keys"));
 			this._pubkey = storedKeys ? storedKeys[0] : "";
 			this._privkey = storedKeys ? storedKeys[1] : "";
 		} else {
@@ -119,14 +117,14 @@ export default class Nostr {
 	}
 
 	public generateKeys(): string[] {
-		let genPriv = generatePrivateKey();
+		const genPriv = generatePrivateKey();
 		this.privkey = genPriv;
 		this.pubkey = getPublicKey(genPriv);
 		return [this.pubkey, this.privkey];
 	}
 
-	public async getPubkeyFromExtension(): Promise<string> {
-		if (!window.nostr) return;
+	public async getPubkeyFromExtension(): Promise<string | null> {
+		if (browser && !window.nostr) return null;
 		this.pubkey = await window.nostr.getPublicKey();
 		return this.pubkey;
 	}
@@ -138,7 +136,7 @@ export default class Nostr {
 	//
 	// Event Management
 	//
-	public async postNewEvent(ev: Event): Promise<string> {
+	public async postNewEvent(ev: Event): Promise<string | undefined> {
 		let event: Event = {
 			...ev,
 			pubkey: this._pubkey,
@@ -146,10 +144,8 @@ export default class Nostr {
 		};
 		event.tags.push(["client", "nosbin"]);
 		event.id = getEventHash(event);
-		// @ts-ignore might exist we don't know
-		if (browser && window.nostr && this._privkey == "") {
+		if (browser && window.nostr && this._privkey === "") {
 			// assume that we are using nostr extension
-			// @ts-ignore
 			event = await window.nostr.signEvent(event);
 			console.debug(event);
 		} else {
@@ -157,7 +153,7 @@ export default class Nostr {
 		}
 		await this.relays.publish(event, this.getCurrentRelaysInArray());
 
-		return event.id!;
+		return event.id;
 	}
 
 	public getEventById(id: string, maxDelayms = 100): Promise<Event> {

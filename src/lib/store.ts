@@ -18,4 +18,4 @@
 
 import { writable } from "svelte/store";
 import Nostr from "$lib/Nostr";
-export const nostr = writable(new Nostr(() => {}));
+export const nostr = writable(new Nostr());

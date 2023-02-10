@@ -23,10 +23,10 @@ export default class Logger {
 	}
 
 	public debug(...data) {
-		console.debug(`[${this.name}] ` + data);
+		console.debug(`[${this.name}] `, data);
 	}
 
 	public error(...data) {
-		console.error(`[${this.name}] ` + data);
+		console.error(`[${this.name}] `, data);
 	}
 }
