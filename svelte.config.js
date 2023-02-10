@@ -17,7 +17,7 @@ import preprocess from "svelte-preprocess";
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import adapter from "@sveltejs/adapter-auto";
+import adapter from "@sveltejs/adapter-vercel";
 import { vitePreprocess } from "@sveltejs/kit/vite";
 
 /** @type {import('@sveltejs/kit').Config} */
