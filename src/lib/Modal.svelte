@@ -92,7 +92,9 @@
 		transform: translate(-50%, -50%);
 		padding: 1em;
 		border-radius: 0.2em;
-		outline: white solid 2px;
-		background: black;
+		@apply outline-black dark:outline-white;
+		outline-style: solid;
+		outline-width: 2px;
+		@apply bg-white dark:bg-black;
 	}
 </style>

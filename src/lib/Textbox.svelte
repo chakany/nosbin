@@ -21,7 +21,7 @@
 </script>
 
 {#if $$props.type === "textarea"}
-	<textarea bind:value class="input" style={$$props.style} placeholder={$$props.placeholder} />
+	<textarea bind:value class="input" style={$$props.style} placeholder={$$props.placeholder}></textarea>
 {:else}
 	<input
 		bind:value
@@ -39,14 +39,14 @@
 		border-style: solid;
 		border-color: #bbbbbb;
 		border-width: thin;
-		background: #171717;
-		color: white;
+		@apply bg-white dark:bg-black;
+		@apply text-black dark:text-white;
 		padding: 10px;
 		transition: border-color 0.2s;
 	}
 	.input:focus {
 		transition: border-color 0.2s;
-		border-color: white;
+		@apply border-black dark:border-white;
 		outline: none;
 	}
 </style>

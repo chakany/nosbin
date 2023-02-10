@@ -24,7 +24,17 @@
 	import { faCheck, faX } from "@fortawesome/free-solid-svg-icons";
 	import { HighlightAuto, LineNumbers } from "svelte-highlight";
 	import SvelteMarkdown from "svelte-markdown";
-	import github from "svelte-highlight/styles/github-dark";
+	import githubDark from "svelte-highlight/styles/github-dark";
+	import github from "svelte-highlight/styles/github";
+	import { browser } from "$app/environment";
+
+	let darkMode = true;
+	if (browser) {
+		const query = window.matchMedia("(prefers-color-scheme: dark)")
+		darkMode = query.matches
+
+		query.addEventListener("change", e => darkMode = e.matches);
+	}
 
 	const event = $nostr.getEventById($page.params.event, 1000);
 	let author = null;
@@ -53,7 +63,11 @@
 		content="view this paste on nosbin, the decentralized pasting platform"
 	/>
 	<meta property="og:title" content="paste {$page.params.event}" />
-	{@html github}
+	{#if darkMode}
+		{@html githubDark}
+	{:else}
+		{@html github}
+	{/if}
 </svelte:head>
 
 {#await event}

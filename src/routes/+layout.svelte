@@ -256,8 +256,7 @@
 	}
 	:global(body) {
 		font-family: "Montserrat", sans-serif;
-		background-color: black;
-		color: white;
+		@apply bg-white text-black dark:bg-black dark:text-white;
 	}
 	:global(a) {
 		color: inherit !important;

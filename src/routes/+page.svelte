@@ -22,10 +22,20 @@
 	import { nostr } from "$lib/store";
 	import { HighlightAuto, LineNumbers } from "svelte-highlight";
 	import SvelteMarkdown from "svelte-markdown";
-	import github from "svelte-highlight/styles/github-dark";
+	import githubDark from "svelte-highlight/styles/github-dark";
+	import github from "svelte-highlight/styles/github";
 	import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
 	import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 	import { KeyModal } from "$lib/ModalController";
+	import { browser } from "$app/environment";
+
+	let darkMode = true;
+	if (browser) {
+		const query = window.matchMedia("(prefers-color-scheme: dark)")
+		darkMode = query.matches
+
+		query.addEventListener("change", e => darkMode = e.matches);
+	}
 
 	let content;
 	let filename;
@@ -59,7 +69,11 @@
 	<meta property="og:title" content="Home - nosbin" />
 	<meta name="description" content="the decentralized pasting platform, built on nostr" />
 	<meta property="og:description" content="the decentralized pasting platform, built on nostr" />
-	{@html github}
+	{#if darkMode}
+		{@html githubDark}
+	{:else}
+		{@html github}
+	{/if}
 </svelte:head>
 
 <h1>Welcome to nosbin</h1>
