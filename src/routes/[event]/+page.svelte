@@ -18,7 +18,7 @@
 <script>
 	import { nostr } from "$lib/store";
 	import { nip19 } from "nostr-tools/index";
-	import { Author } from "nostr-relaypool";
+	import { Author } from "nostr-relaypool/index";
 	import { page } from "$app/stores";
 	import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
 	import { faCheck, faX } from "@fortawesome/free-solid-svg-icons";
