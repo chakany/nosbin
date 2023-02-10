@@ -15,82 +15,86 @@
   - You should have received a copy of the GNU Affero General Public License
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-
 <script>
-  import { createEventDispatcher, onDestroy } from 'svelte';
-  import Button from "$lib/Button.svelte"
+	import { createEventDispatcher, onDestroy } from "svelte";
+	import { blur, scale } from "svelte/transition";
+	import Button from "$lib/Button.svelte";
 
-  const dispatch = createEventDispatcher();
-  const close = () => dispatch('close');
+	const dispatch = createEventDispatcher();
+	const close = () => dispatch("close");
 
-  let modal;
+	let modal;
 
-  const handle_keydown = e => {
-    if (e.key === 'Escape') {
-      close();
-      return;
-    }
+	const handle_keydown = (e) => {
+		if (e.key === "Escape") {
+			close();
+			return;
+		}
 
-    if (e.key === 'Tab') {
-      // trap focus
-      const nodes = modal.querySelectorAll('*');
-      const tabbable = Array.from(nodes).filter(n => n.tabIndex >= 0);
+		if (e.key === "Tab") {
+			// trap focus
+			const nodes = modal.querySelectorAll("*");
+			const tabbable = Array.from(nodes).filter((n) => n.tabIndex >= 0);
 
-      let index = tabbable.indexOf(document.activeElement);
-      if (index === -1 && e.shiftKey) index = 0;
+			let index = tabbable.indexOf(document.activeElement);
+			if (index === -1 && e.shiftKey) index = 0;
 
-      index += tabbable.length + (e.shiftKey ? -1 : 1);
-      index %= tabbable.length;
+			index += tabbable.length + (e.shiftKey ? -1 : 1);
+			index %= tabbable.length;
 
-      tabbable[index].focus();
-      e.preventDefault();
-    }
-  };
+			tabbable[index].focus();
+			e.preventDefault();
+		}
+	};
 
-  const previously_focused = typeof document !== 'undefined' && document.activeElement;
+	const previously_focused = typeof document !== "undefined" && document.activeElement;
 
-  if (previously_focused) {
-    onDestroy(() => {
-      previously_focused.focus();
-    });
-  }
+	if (previously_focused) {
+		onDestroy(() => {
+			previously_focused.focus();
+		});
+	}
 </script>
 
-<svelte:window on:keydown={handle_keydown}/>
+<svelte:window on:keydown={handle_keydown} />
 
-<div class="modal-background" on:click={close}></div>
+<div
+	transition:blur={{ duration: 250 }}
+	class="fixed top-0 left-0 z-30 h-full w-full backdrop-blur"
+	on:click|self={close}
+>
+	<div
+		transition:scale={{ duration: 250 }}
+		class="modaltest z-40 drop-shadow-2xl"
+		role="dialog"
+		aria-modal="true"
+		bind:this={modal}
+	>
+		<slot name="header" />
+		<hr class="my-2" />
+		<slot />
+		<hr class="my-2" />
 
-<div class="modal" role="dialog" aria-modal="true" bind:this={modal}>
-  <slot name="header"></slot>
-  <hr>
-  <slot></slot>
-  <hr>
-
-  <!-- svelte-ignore a11y-autofocus -->
-  <Button on:click={close}>Done</Button>
+		<!-- svelte-ignore a11y-autofocus -->
+		<Button on:click={close}>Done</Button>
+	</div>
 </div>
 
 <style>
-    .modal-background {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.3);
-    }
-
-    .modal {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        width: calc(100vw - 4em);
-        max-width: 32em;
-        max-height: calc(100vh - 4em);
-        overflow: auto;
-        transform: translate(-50%,-50%);
-        padding: 1em;
-        border-radius: 0.2em;
-        background: #1f1f1f;
-    }
+	.modaltest {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: calc(100vw - 4em);
+		max-width: 32em;
+		max-height: calc(100vh - 4em);
+		overflow: auto;
+		transform: translate(-50%, -50%);
+		padding: 1em;
+		border-radius: 0.2em;
+		@apply outline-black dark:outline-white;
+		outline-style: solid;
+		outline-width: 2px;
+		@apply bg-white dark:bg-black;
+	}
 </style>

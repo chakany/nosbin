@@ -18,4 +18,5 @@
 
 import { writable } from "svelte/store";
 
-export const KeyModal = writable(false)
+export const KeyModal = writable(false);
+export const RelayModal = writable(false);

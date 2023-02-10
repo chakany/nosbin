@@ -17,16 +17,16 @@
  */
 
 export default class Logger {
-  public name: string
-  constructor(name: string) {
-    this.name = name
-  }
+	public name: string;
+	constructor(name: string) {
+		this.name = name;
+	}
 
-  public debug(...data) {
-    console.debug(`[${this.name}] ` + data)
-  }
+	public debug(...data) {
+		console.debug(`[${this.name}] `, data);
+	}
 
-  public error(...data) {
-    console.error(`[${this.name}] ` + data)
-  }
+	public error(...data) {
+		console.error(`[${this.name}] `, data);
+	}
 }
