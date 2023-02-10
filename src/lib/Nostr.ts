@@ -54,6 +54,15 @@ export default class Nostr {
         }
     }
 
+    public async nip05(nip05: string, pubkey: string): Promise<boolean> {
+        const splitted = nip05.split("@");
+        const req = await fetch(`https://${splitted[1]}/.well-known/nostr.json?name=${splitted[0]}`)
+        if (!req.ok) return false
+
+        const data = await req.json()
+        return data.names[splitted[0]] === pubkey
+    }
+
     //
     // Key Management
     //

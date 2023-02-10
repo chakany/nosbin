@@ -18,10 +18,29 @@
 
 <script>
     import { nostr } from "$lib/store";
+    import { nip19 } from "nostr-tools/index"
+    import { Author } from "nostr-relaypool"
     import { page } from "$app/stores";
+    import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome'
+    import { faCheck, faX } from '@fortawesome/free-solid-svg-icons'
     import { HighlightAuto, LineNumbers } from "svelte-highlight";
     import SvelteMarkdown from "svelte-markdown";
     import github from "svelte-highlight/styles/github-dark";
+
+    const event = $nostr.getEventById($page.params.event, 1000)
+    let author = null
+    let profile = {}
+
+    function getAuthor(data) {
+      author = new Author($nostr.relays, $nostr.getCurrentRelaysInArray(), data.pubkey)
+      author.metaData((ev) => {
+        const parsed = JSON.parse(ev.content)
+        if (!parsed.name) return
+        console.log(parsed)
+
+        profile = parsed
+      }, 1000)
+    }
 </script>
 <svelte:head>
   <title>paste {$page.params.event} - nosbin</title>
@@ -31,12 +50,33 @@
   {@html github}
 </svelte:head>
 
-{#await $nostr.getEventById($page.params.event, 1000)}
+{#await event}
   <h2>Fetching...</h2>
   If data doesn't load, try refreshing.
   {:then data}
-  <h2>{data?.tags[0][1]}</h2>
-  Posted by: {data.pubkey} <br />
+  {void getAuthor(data) || ""}
+  <h2 class="text-6xl">{data?.tags[0][1]}</h2>
+  <div class="flex mt-5">
+    <img class="my-auto w-12 rounded" src={profile.picture ?? `https://robohash.org/${data.pubkey}?sets=1`} alt="Profile Picture" />
+    <div class="flex flex-col my-auto pl-3">
+      <span>{profile.display_name ?? (profile.name ?? nip19.npubEncode(data.pubkey))}</span>
+      <span>
+        {profile.nip05 ?? ""}
+        {#if profile.nip05}
+          {#await $nostr.nip05(profile.nip05, data.pubkey) then valid}
+            {#if valid}
+              <FontAwesomeIcon icon={faCheck} />
+              {:else if !valid}
+              <FontAwesomeIcon icon={faX} />
+            {/if}
+            {:catch error}
+            <FontAwesomeIcon icon={faX} />
+          {/await}
+        {/if}
+      </span>
+    </div>
+  </div>
+  <br />
   Posted on: {new Date(data.created_at * 1000)}
   {#if data?.tags[0][1].endsWith(".md")}
     <SvelteMarkdown source={data.content} />

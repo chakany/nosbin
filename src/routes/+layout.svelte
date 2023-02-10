@@ -72,6 +72,7 @@
 	  $nostr.pubkey = inputtedPubkey
 	  $nostr.privkey = inputtedPrivkey
       account = new Author($nostr.relays, $nostr.getCurrentRelaysInArray(), $nostr._pubkey)
+      profile = {}
       account.metaData((event) => {
           updateProfile(event)
       }, 1000)
@@ -136,7 +137,7 @@
         </span>
 
         {#if inputtedPubkey}
-            <img on:click={() => KeyModal.set(true)} class="my-auto cursor-pointer w-12 rounded" src={profile.picture ? profile.picture : `https://robohash.org/${inputtedPubkey}?sets=1`} alt="Profile Picture" />
+            <img on:click={() => KeyModal.set(true)} class="my-auto cursor-pointer w-12 rounded" src={profile.picture ? profile.picture : `https://robohash.org/${$nostr._pubkey}?sets=1`} alt="Profile Picture" />
         {:else}
             <Button on:click={() => KeyModal.set(true)} class="my-auto cursor-pointer">Login</Button>
         {/if}
