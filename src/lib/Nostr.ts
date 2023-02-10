@@ -144,10 +144,8 @@ export default class Nostr {
 		};
 		event.tags.push(["client", "nosbin"]);
 		event.id = getEventHash(event);
-		// @ts-ignore might exist we don't know
 		if (browser && window.nostr && this._privkey === "") {
 			// assume that we are using nostr extension
-			// @ts-ignore
 			event = await window.nostr.signEvent(event);
 			console.debug(event);
 		} else {
