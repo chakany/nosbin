@@ -142,7 +142,7 @@
 				alt="Profile Picture"
 			/>
 		{:else}
-			<Button on:click={() => KeyModal.set(true)} class="my-auto cursor-pointer">Login</Button
+			<Button on:click={() => KeyModal.set(true)}>Login</Button
 			>
 		{/if}
 	</div>
@@ -230,7 +230,7 @@
 				<a class="my-auto" href="https://chaker.net" style="text-decoration: none"
 					><span class="chaker my-auto">Chaker</span></a
 				>
-				<a class="my-auto" href="https://github.com/jacany/nosbin"
+				<a class="my-auto" title="nosbin GitHub" href="https://github.com/jacany/nosbin"
 					><FontAwesomeIcon size="2xl" icon={faGithub} /></a
 				>
 			</div>
