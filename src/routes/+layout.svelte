@@ -20,7 +20,7 @@
 	import Button from "$lib/Button.svelte";
 	import Modal from "$lib/Modal.svelte";
 	import { KeyModal, RelayModal } from "$lib/ModalController";
-	import { Author } from "nostr-relaypool";
+	import { Author } from "nostr-relaypool/index";
 
 	export const ssr = false;
 	import "../app.postcss";

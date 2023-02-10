@@ -26,7 +26,7 @@ import {
 import { browser } from "$app/environment";
 import type { Event } from "nostr-tools/index";
 import Logger from "$lib/Logger";
-import { RelayPool } from "nostr-relaypool";
+import { RelayPool } from "nostr-relaypool/index";
 
 export default class Nostr {
 	public relays: RelayPool;
