@@ -17,7 +17,7 @@
   -->
 
 <button
-	class="w-32 cursor-pointer rounded border border-solid bg-white p-2 text-xl text-black outline-0 transition-colors hover:bg-black hover:text-white"
+	class="w-20 md:w-32 h-10 md:h-12 cursor-pointer rounded border border-solid bg-white p-2 text-base md:text-xl text-black outline-0 transition-colors hover:bg-black hover:text-white"
 	on:click
 >
 	<slot />

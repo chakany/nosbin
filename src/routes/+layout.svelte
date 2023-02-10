@@ -119,17 +119,17 @@
 	if ($nostr._pubkey) updateRelays();
 </script>
 
-<div class="mx-20 my-7 flex">
+<div class="mx-10 md:mx-20 my-7 flex">
 	<!--suppress JSUnresolvedVariable -->
-	<div style="font-size: 1.5rem;" class>
-		<a style="text-decoration: none;" href="/">
-			<FontAwesomeIcon class="my-auto mr-3" size="2xl" icon={faNoteSticky} />
+	<div class="my-auto">
+		<a class="md:text-2xl" style="text-decoration: none;" href="/">
+			<FontAwesomeIcon class="my-auto mr-1" size="2xl" icon={faNoteSticky} />
 			<span class="name my-auto" style>nosbin</span>
 		</a>
 		<!-- svelte-ignore missing-declaration -->
 		<small>v{_version_}</small>
 	</div>
-	<div class="ml-auto flex gap-8">
+	<div class="ml-auto my-auto flex gap-8">
 		<span class="my-auto"><FontAwesomeIcon size="xl" icon={faSun} /></span>
 		<span on:click={() => RelayModal.set(true)} class="my-auto cursor-pointer">
 			<FontAwesomeIcon size="xl" fade={false} icon={faServer} />
@@ -150,7 +150,7 @@
 		{/if}
 	</div>
 </div>
-<div class="container mx-auto px-20">
+<div class="container mx-auto md:px-20">
 	{#if $KeyModal}
 		<Modal
 			on:close={() => {
@@ -162,11 +162,11 @@
 
 			<div class="flex flex-col gap-5">
 				<div class="flex flex-col">
-					Public Key (hex)
+					Public Key (npub or hex)
 					<Textbox bind:value={inputtedPubkey} placeholder="Type your public key..." />
 				</div>
 				<div class="flex flex-col">
-					Private Key (hex)
+					Private Key (nsec or hex)
 					<Textbox bind:value={inputtedPrivkey} placeholder="Type your private key..." />
 				</div>
 				<div>
@@ -217,19 +217,17 @@
 					</div>
 				{/each}
 			</div>
-			<div style="padding: 1vh 0">
-				<small
-					>If your relays aren't appearing, make sure you added your pubkey and then
-					refresh the page</small
-				>
-			</div>
+			<small
+			>If your relays aren't appearing, make sure you added your pubkey and then
+				refresh the page</small
+			>
 		</Modal>
 	{/if}
 	<slot />
 </div>
-<footer class="mt-40 pb-4">
+<footer class="mt-40">
 	<hr />
-	<div class="px-12 py-10">
+	<div class="px-2 md:px-12 py-10">
 		<div class="grid grid-flow-col grid-rows-3 gap-4">
 			<div class="col-start-1 flex gap-4">
 				<a class="my-auto" href="https://chaker.net" style="text-decoration: none"
@@ -257,7 +255,7 @@
 
 <style lang="postcss">
 	:global(html) {
-		font-size: calc(0.4vw + 0.4vh + 0.4vmin);
+		@apply text-sm md:text-base;
 	}
 	:global(body) {
 		font-family: "Montserrat", sans-serif;
@@ -267,8 +265,8 @@
 	:global(a) {
 		color: inherit !important;
 	}
-	small {
-		font-size: 0.8em;
+	:global(small) {
+		@apply text-xs;
 	}
 	.chaker {
 		font-family: "Righteous", cursive;
@@ -293,13 +291,13 @@
 
 	@keyframes gradient {
 		0% {
-			background-position: 0% 50%;
+			background-position: 0 50%;
 		}
 		50% {
 			background-position: 100% 50%;
 		}
 		100% {
-			background-position: 0% 50%;
+			background-position: 0 50%;
 		}
 	}
 </style>
