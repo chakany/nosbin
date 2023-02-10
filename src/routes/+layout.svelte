@@ -15,269 +15,291 @@
   - You should have received a copy of the GNU Affero General Public License
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-
 <script lang="ts">
-  import Textbox from "$lib/Textbox.svelte";
-  import Button from "$lib/Button.svelte";
-  import Modal from "$lib/Modal.svelte";
-  import { KeyModal, RelayModal } from "$lib/ModalController";
-  import { Author } from "nostr-relaypool"
+	import Textbox from "$lib/Textbox.svelte";
+	import Button from "$lib/Button.svelte";
+	import Modal from "$lib/Modal.svelte";
+	import { KeyModal, RelayModal } from "$lib/ModalController";
+	import { Author } from "nostr-relaypool";
 
-    export const ssr = false;
-    import "../app.postcss";
-    import "@fontsource/montserrat";
-    import "@fontsource/righteous";
-    import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome'
-    import { faNoteSticky, faSun, faServer } from '@fortawesome/free-solid-svg-icons'
-    import { faGithub } from "@fortawesome/free-brands-svg-icons";
-    import { config } from '@fortawesome/fontawesome-svg-core'
-    import '@fortawesome/fontawesome-svg-core/styles.css' // Import the CSS
+	export const ssr = false;
+	import "../app.postcss";
+	import "@fontsource/montserrat";
+	import "@fontsource/righteous";
+	import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
+	import { faNoteSticky, faSun, faServer } from "@fortawesome/free-solid-svg-icons";
+	import { faGithub } from "@fortawesome/free-brands-svg-icons";
+	import { config } from "@fortawesome/fontawesome-svg-core";
+	import "@fortawesome/fontawesome-svg-core/styles.css"; // Import the CSS
 
-  config.autoAddCss = false // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
+	config.autoAddCss = false; // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
 
-  // init connection
-  import { nostr } from "$lib/store";
-  import {onMount} from "svelte";
-  let inputtedPubkey = $nostr.pubkey;
-  let inputtedPrivkey = $nostr.privkey;
-  let account = new Author($nostr.relays, $nostr.getCurrentRelaysInArray(), $nostr._pubkey)
-  let profile = {}
-  account.metaData((event) => {
-      updateProfile(event)
-  }, 1000)
-  let countdown = 10
-  setInterval(() => {
-	  if (countdown > 0) countdown--
-	  else {
-		  updateState()
-		  countdown = 10
-	  }
-  }, 1000)
+	// init connection
+	import { nostr } from "$lib/store";
+	import { onMount } from "svelte";
+	let inputtedPubkey = $nostr.pubkey;
+	let inputtedPrivkey = $nostr.privkey;
+	let account = new Author($nostr.relays, $nostr.getCurrentRelaysInArray(), $nostr._pubkey);
+	let profile = {};
+	account.metaData((event) => {
+		updateProfile(event);
+	}, 1000);
+	let countdown = 10;
+	setInterval(() => {
+		if (countdown > 0) countdown--;
+		else {
+			updateState();
+			countdown = 10;
+		}
+	}, 1000);
 
-  // used to refresh relay state on update, like when an entry is added and deleted and such.
-  function updateState() {
-	  nostr.set($nostr)
-	  countdown = 10
-  }
+	// used to refresh relay state on update, like when an entry is added and deleted and such.
+	function updateState() {
+		nostr.set($nostr);
+		countdown = 10;
+	}
 
-  function updateProfile(event) {
-      let data = JSON.parse(event.content)
-      if (!data.name) return
-      console.log(data.picture)
+	function updateProfile(event) {
+		let data = JSON.parse(event.content);
+		if (!data.name) return;
+		console.log(data.picture);
 
-      profile = data
-  }
+		profile = data;
+	}
 
-  function saveKeys() {
-	  $nostr.pubkey = inputtedPubkey
-	  $nostr.privkey = inputtedPrivkey
-      account = new Author($nostr.relays, $nostr.getCurrentRelaysInArray(), $nostr._pubkey)
-      profile = {}
-      account.metaData((event) => {
-          updateProfile(event)
-      }, 1000)
-  }
+	function saveKeys() {
+		$nostr.pubkey = inputtedPubkey;
+		$nostr.privkey = inputtedPrivkey;
+		account = new Author($nostr.relays, $nostr.getCurrentRelaysInArray(), $nostr._pubkey);
+		profile = {};
+		account.metaData((event) => {
+			updateProfile(event);
+		}, 1000);
+	}
 
+	// needed because someone decided that nostr-tools relay connect() doesn't need a error handler in any way
+	// makes it impossible to catch initial connection errors
+	onMount(() => {
+		window.addEventListener("unhandledrejection", () => {});
+	});
 
-  // needed because someone decided that nostr-tools relay connect() doesn't need a error handler in any way
-  // makes it impossible to catch initial connection errors
-  onMount(() => {
-	  window.addEventListener("unhandledrejection", () => {});
-  })
+	function updateRelays() {
+		try {
+			let unsub = $nostr.relays.subscribe(
+				[
+					{
+						authors: [$nostr._pubkey],
+						kinds: [3],
+					},
+				],
+				$nostr.getCurrentRelaysInArray(),
+				(event) => {
+					if (!event.content) return;
+					let returnedRelays = JSON.parse(event.content);
+					let currentRelays = $nostr.getCurrentRelaysInArray();
 
-  function updateRelays() {
-	  try {
-		  let unsub = $nostr.relays.subscribe(
-				  [
-					  {
-						  authors: [$nostr._pubkey],
-						  kinds: [3]
-					  }
-				  ],
-				  $nostr.getCurrentRelaysInArray(),
-				  (event) => {
-					  if (!event.content) return
-					  let returnedRelays = JSON.parse(event.content)
-					  let currentRelays = $nostr.getCurrentRelaysInArray()
+					let returnedKeys = Object.keys(returnedRelays);
+					returnedKeys.forEach((value) => {
+						if (!currentRelays.includes(value)) $nostr.relays.addOrGetRelay(value);
+					});
+					currentRelays.forEach((value) => {
+						if (!returnedKeys.includes(value) && value !== "wss://relay.nosbin.com")
+							$nostr.relays.removeRelay(value);
+					});
+					unsub();
+					updateRelays();
+				},
+				1000,
+				undefined,
+				{ allowOlderEvents: true }
+			);
+		} catch (error) {}
+	}
 
-					  let returnedKeys = Object.keys(returnedRelays)
-					  returnedKeys.forEach((value) => {
-						  if (!currentRelays.includes(value)) $nostr.relays.addOrGetRelay(value)
-					  })
-					  currentRelays.forEach((value) => {
-						  if (!returnedKeys.includes(value) && value !== "wss://relay.nosbin.com") $nostr.relays.removeRelay(value)
-					  })
-					  unsub()
-					  updateRelays()
-				  },
-				  1000,
-				  undefined,
-				  {allowOlderEvents: true}
-		  )
-	  } catch (error) {}
-  }
-
-  if ($nostr._pubkey) updateRelays()
+	if ($nostr._pubkey) updateRelays();
 </script>
 
-<div class="flex mx-20 my-7">
-    <!--suppress JSUnresolvedVariable -->
-    <div style="font-size: 1.5rem;" class>
-        <a style="text-decoration: none;" href="/">
-            <FontAwesomeIcon class="my-auto mr-3" size="2xl" icon="{faNoteSticky}"></FontAwesomeIcon>
-            <span class="my-auto name" style>nosbin</span>
-        </a>
-        <!-- svelte-ignore missing-declaration -->
-        <small>v{_version_}</small>
-    </div>
-    <div class="ml-auto flex gap-8">
-        <span class="my-auto"><FontAwesomeIcon size="xl" icon="{faSun}"></FontAwesomeIcon></span>
-        <span on:click={() => RelayModal.set(true)} class="my-auto cursor-pointer">
-            <FontAwesomeIcon size="xl" fade={false} icon={faServer} />
-        </span>
+<div class="mx-20 my-7 flex">
+	<!--suppress JSUnresolvedVariable -->
+	<div style="font-size: 1.5rem;" class>
+		<a style="text-decoration: none;" href="/">
+			<FontAwesomeIcon class="my-auto mr-3" size="2xl" icon={faNoteSticky} />
+			<span class="name my-auto" style>nosbin</span>
+		</a>
+		<!-- svelte-ignore missing-declaration -->
+		<small>v{_version_}</small>
+	</div>
+	<div class="ml-auto flex gap-8">
+		<span class="my-auto"><FontAwesomeIcon size="xl" icon={faSun} /></span>
+		<span on:click={() => RelayModal.set(true)} class="my-auto cursor-pointer">
+			<FontAwesomeIcon size="xl" fade={false} icon={faServer} />
+		</span>
 
-        {#if inputtedPubkey}
-            <img on:click={() => KeyModal.set(true)} class="my-auto cursor-pointer w-12 rounded" src={profile.picture ? profile.picture : `https://robohash.org/${$nostr._pubkey}?sets=1`} alt="Profile Picture" />
-        {:else}
-            <Button on:click={() => KeyModal.set(true)} class="my-auto cursor-pointer">Login</Button>
-        {/if}
-    </div>
+		{#if inputtedPubkey}
+			<img
+				on:click={() => KeyModal.set(true)}
+				class="my-auto w-12 cursor-pointer rounded"
+				src={profile.picture
+					? profile.picture
+					: `https://robohash.org/${$nostr._pubkey}?sets=1`}
+				alt="Profile Picture"
+			/>
+		{:else}
+			<Button on:click={() => KeyModal.set(true)} class="my-auto cursor-pointer">Login</Button
+			>
+		{/if}
+	</div>
 </div>
 <div class="container mx-auto px-20">
-    {#if $KeyModal}
-        <Modal on:close={() => {saveKeys(); KeyModal.set(false)}}>
-            <h2 class="text-2xl" slot="header">
-                Manage Keys
-            </h2>
+	{#if $KeyModal}
+		<Modal
+			on:close={() => {
+				saveKeys();
+				KeyModal.set(false);
+			}}
+		>
+			<h2 class="text-2xl" slot="header">Manage Keys</h2>
 
-            <div class="flex flex-col gap-5">
-                <div class="flex flex-col">
-                    Public Key (hex)
-                    <Textbox bind:value={inputtedPubkey} placeholder="Type your public key..."></Textbox>
-                </div>
-                <div class="flex flex-col">
-                    Private Key (hex)
-                    <Textbox bind:value={inputtedPrivkey} placeholder="Type your private key..."></Textbox>
-                </div>
-                <div>
-                    <Button on:click={() => [inputtedPubkey, inputtedPrivkey] = $nostr.generateKeys()}>Generate</Button>
-                    <Button on:click={async () => { inputtedPubkey = await $nostr.getPubkeyFromExtension(); inputtedPrivkey = "" }}>NIP-07</Button>
-                </div>
-                <small><i>
-                    {#if inputtedPubkey && inputtedPrivkey === ""}
-                        You will be asked for your Private Key every time you want to sign an event.
-                    {:else if inputtedPubkey && inputtedPrivkey}
-                        Events will be signed automatically using the stored private key
-                    {/if}
-                </i></small>
-            </div>
-        </Modal>
-        {:else if $RelayModal}
-        <Modal on:close="{() => RelayModal.set(false)}">
-            <div slot="header">
-                <h2 class="text-2xl">
-                    View Relays
-                </h2>
-                <span>Refreshing in {countdown}s</span>
-            </div>
-	  <div class="flex flex-col" style="gap: 10px;">
-		{#each $nostr.relays.getRelayStatuses() as relay}
-		  <div class="flex">
-			<div class="my-auto mr-auto">
-			  {#if relay[1] === 0 || relay[1] === 2}
-				⚠️
-			  {:else if relay[1] === 1}
-				✅
-			  {:else if relay[1] === 3}
-				❌
-			  {:else}
-				❌
-			  {/if}
-			  {relay[0]}
+			<div class="flex flex-col gap-5">
+				<div class="flex flex-col">
+					Public Key (hex)
+					<Textbox bind:value={inputtedPubkey} placeholder="Type your public key..." />
+				</div>
+				<div class="flex flex-col">
+					Private Key (hex)
+					<Textbox bind:value={inputtedPrivkey} placeholder="Type your private key..." />
+				</div>
+				<div>
+					<Button
+						on:click={() => ([inputtedPubkey, inputtedPrivkey] = $nostr.generateKeys())}
+						>Generate</Button
+					>
+					<Button
+						on:click={async () => {
+							inputtedPubkey = await $nostr.getPubkeyFromExtension();
+							inputtedPrivkey = "";
+						}}>NIP-07</Button
+					>
+				</div>
+				<small
+					><i>
+						{#if inputtedPubkey && inputtedPrivkey === ""}
+							You will be asked for your Private Key every time you want to sign an
+							event.
+						{:else if inputtedPubkey && inputtedPrivkey}
+							Events will be signed automatically using the stored private key
+						{/if}
+					</i></small
+				>
 			</div>
-		  </div>
-		{/each}
-	  </div>
-		<div style="padding: 1vh 0">
-			<small>If your relays aren't appearing, make sure you added your pubkey and then refresh the page</small>
-		</div>
-	</Modal>
-        {/if}
-    <slot></slot>
+		</Modal>
+	{:else if $RelayModal}
+		<Modal on:close={() => RelayModal.set(false)}>
+			<div slot="header">
+				<h2 class="text-2xl">View Relays</h2>
+				<span>Refreshing in {countdown}s</span>
+			</div>
+			<div class="flex flex-col" style="gap: 10px;">
+				{#each $nostr.relays.getRelayStatuses() as relay}
+					<div class="flex">
+						<div class="my-auto mr-auto">
+							{#if relay[1] === 0 || relay[1] === 2}
+								⚠️
+							{:else if relay[1] === 1}
+								✅
+							{:else if relay[1] === 3}
+								❌
+							{:else}
+								❌
+							{/if}
+							{relay[0]}
+						</div>
+					</div>
+				{/each}
+			</div>
+			<div style="padding: 1vh 0">
+				<small
+					>If your relays aren't appearing, make sure you added your pubkey and then
+					refresh the page</small
+				>
+			</div>
+		</Modal>
+	{/if}
+	<slot />
 </div>
 <footer class="mt-40 pb-4">
-    <hr>
-    <div class="px-12 py-10">
-        <div class="grid grid-rows-3 grid-flow-col gap-4">
-            <div class="flex gap-4 col-start-1">
-                <a class="my-auto" href="https://chaker.net" style="text-decoration: none"><span class="chaker my-auto">Chaker</span></a>
-                <a class="my-auto" href="https://github.com/jacany/nosbin"><FontAwesomeIcon size="2xl" icon="{faGithub}"></FontAwesomeIcon></a>
-            </div>
-            <div class="col-start-2 flex flex-col text-right">
-                <small class="my-auto">Made with ❤️ by <a class="underline" href="https://jacany.com">Jack Chakany</a></small>
-                <small class="my-auto">This project is published under the <a href="https://github.com/jacany/nosbin/blob/master/LICENSE">GNU Affero General Public License</a></small>
-            </div>
-        </div>
-    </div>
+	<hr />
+	<div class="px-12 py-10">
+		<div class="grid grid-flow-col grid-rows-3 gap-4">
+			<div class="col-start-1 flex gap-4">
+				<a class="my-auto" href="https://chaker.net" style="text-decoration: none"
+					><span class="chaker my-auto">Chaker</span></a
+				>
+				<a class="my-auto" href="https://github.com/jacany/nosbin"
+					><FontAwesomeIcon size="2xl" icon={faGithub} /></a
+				>
+			</div>
+			<div class="col-start-2 flex flex-col text-right">
+				<small class="my-auto"
+					>Made with ❤️ by <a class="underline" href="https://jacany.com">Jack Chakany</a
+					></small
+				>
+				<small class="my-auto"
+					>This project is published under the <a
+						href="https://github.com/jacany/nosbin/blob/master/LICENSE"
+						>GNU Affero General Public License</a
+					></small
+				>
+			</div>
+		</div>
+	</div>
 </footer>
 
 <style lang="postcss">
-    :global(html) {
-        font-size: calc(0.4vw + 0.4vh + 0.4vmin);
-    }
-    :global(body) {
-        font-family: "Montserrat", sans-serif;
-        background-color: black;
-        color: white;
-    }
-    :global(a) {
-        color: inherit !important;
-    }
-    small {
-        font-size: 0.8em;
-    }
-    .chaker {
-        font-family: "Righteous", cursive;
-        font-size: 2em;
-        text-decoration: none;
-        transition: all 0.3s ease-out;
-        background: linear-gradient(
-            45deg,
-            rgb(64, 64, 64),
-            rgb(64, 64, 64)
-        );
-        background-clip: text;
-        -webkit-background-clip: text;
-        color: transparent;
-    }
-    .chaker:hover {
-         color: transparent;
-         cursor: pointer;
-         background: linear-gradient(
-           45deg,
-           #f17c58,
-           #e94584,
-           #24aadb,
-           #27dbb1,
-           #ffdc18,
-           #ff3706
-         );
-         background-size: 600% 100%;
-         animation: gradient 16s linear infinite;
-         animation-direction: alternate;
-         background-clip: text;
-         -webkit-background-clip: text;
-     }
+	:global(html) {
+		font-size: calc(0.4vw + 0.4vh + 0.4vmin);
+	}
+	:global(body) {
+		font-family: "Montserrat", sans-serif;
+		background-color: black;
+		color: white;
+	}
+	:global(a) {
+		color: inherit !important;
+	}
+	small {
+		font-size: 0.8em;
+	}
+	.chaker {
+		font-family: "Righteous", cursive;
+		font-size: 2em;
+		text-decoration: none;
+		transition: all 0.3s ease-out;
+		background: linear-gradient(45deg, rgb(64, 64, 64), rgb(64, 64, 64));
+		background-clip: text;
+		-webkit-background-clip: text;
+		color: transparent;
+	}
+	.chaker:hover {
+		color: transparent;
+		cursor: pointer;
+		background: linear-gradient(45deg, #f17c58, #e94584, #24aadb, #27dbb1, #ffdc18, #ff3706);
+		background-size: 600% 100%;
+		animation: gradient 16s linear infinite;
+		animation-direction: alternate;
+		background-clip: text;
+		-webkit-background-clip: text;
+	}
 
-    @keyframes gradient {
-        0% {
-            background-position: 0% 50%;
-        }
-        50% {
-            background-position: 100% 50%;
-        }
-        100% {
-            background-position: 0% 50%;
-        }
-    }
+	@keyframes gradient {
+		0% {
+			background-position: 0% 50%;
+		}
+		50% {
+			background-position: 100% 50%;
+		}
+		100% {
+			background-position: 0% 50%;
+		}
+	}
 </style>

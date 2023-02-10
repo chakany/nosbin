@@ -16,14 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { sveltekit } from '@sveltejs/kit/vite';
+import { sveltekit } from "@sveltejs/kit/vite";
 
 /** @type {import('vite').UserConfig} */
 const config = {
 	plugins: [sveltekit()],
 	define: {
-		_version_: JSON.stringify(process.env.npm_package_version)
-	}
+		_version_: JSON.stringify(process.env.npm_package_version),
+	},
 };
 
 export default config;

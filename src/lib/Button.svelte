@@ -16,6 +16,9 @@
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<button class="bg-white text-black rounded border-solid border cursor-pointer w-32 text-xl p-2 outline-0 transition-colors hover:bg-black hover:text-white" on:click>
-  <slot></slot>
+<button
+	class="w-32 cursor-pointer rounded border border-solid bg-white p-2 text-xl text-black outline-0 transition-colors hover:bg-black hover:text-white"
+	on:click
+>
+	<slot />
 </button>

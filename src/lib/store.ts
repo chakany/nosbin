@@ -16,6 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {writable} from "svelte/store";
-import Nostr from "$lib/Nostr"
-export const nostr = writable(new Nostr(() => {}))
+import { writable } from "svelte/store";
+import Nostr from "$lib/Nostr";
+export const nostr = writable(new Nostr(() => {}));

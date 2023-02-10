@@ -1,22 +1,21 @@
-
 name: Send nostr Event on Pull Request
 
 on:
-  pull_request:
-    types: [opened, closed, reopened]
+    pull_request:
+        types: [opened, closed, reopened]
 
 jobs:
-  units:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Publish to nostr
-        uses: theborakompanioni/nostr-action@v1
-        with:
-          key: ${{ secrets.NOSTR_KEY }}
-          relay: wss://relay.damus.io
-          content: |
-            Pull Request ${{ github.event.action }}
-            
-            ${{ github.actor }} ${{ github.event.action }} PR#${{ github.event.pull_request.number }}
+    units:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        steps:
+            - name: Publish to nostr
+              uses: theborakompanioni/nostr-action@v1
+              with:
+                  key: ${{ secrets.NOSTR_KEY }}
+                  relay: wss://relay.damus.io
+                  content: |
+                      Pull Request ${{ github.event.action }}
+
+                      ${{ github.actor }} ${{ github.event.action }} PR#${{ github.event.pull_request.number }}

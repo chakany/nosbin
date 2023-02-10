@@ -1,16 +1,18 @@
 # nosbin
+
 The decentralized pasting platform, built on nostr
 
 ### Features
-- [X] Markdown Support
-- [X] Use anonymous pubkey
-- [X] Use own pubkey
-  - [X] bech32 support
-  - [X] nox2x support
-- [ ] Preview before posting
-- [ ] Comments
-- [ ] Reactions
-- [ ] Profiles
-- [ ] Search
-- [X] Posting to multiple Relays
-- [ ] Lightning Tips
+
+-   [x] Markdown Support
+-   [x] Use anonymous pubkey
+-   [x] Use own pubkey
+    -   [x] bech32 support
+    -   [x] nox2x support
+-   [ ] Preview before posting
+-   [ ] Comments
+-   [ ] Reactions
+-   [ ] Profiles
+-   [ ] Search
+-   [x] Posting to multiple Relays
+-   [ ] Lightning Tips

@@ -15,31 +15,38 @@
   - You should have received a copy of the GNU Affero General Public License
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-
 <script>
-    export let value = ""
-    let disabled = false;
+	export let value = "";
+	let disabled = false;
 </script>
 
 {#if $$props.type === "textarea"}
-    <textarea bind:value class="input" style={$$props.style} placeholder={$$props.placeholder}></textarea>
+	<textarea bind:value class="input" style={$$props.style} placeholder={$$props.placeholder} />
 {:else}
-    <input bind:value class="input" type="text" disabled={disabled} style={$$props.style} placeholder={$$props.placeholder} />
+	<input
+		bind:value
+		class="input"
+		type="text"
+		{disabled}
+		style={$$props.style}
+		placeholder={$$props.placeholder}
+	/>
 {/if}
+
 <style>
-    .input {
-        border-radius: 0.25rem;
-        border-style: solid;
-        border-color: #bbbbbb;
-        border-width: thin;
-        background: #171717;
-        color: white;
-        padding: 10px;
-        transition: border-color 0.2s;
-    }
-    .input:focus {
-        transition: border-color 0.2s;
-        border-color: white;
-        outline: none;
-    }
+	.input {
+		border-radius: 0.25rem;
+		border-style: solid;
+		border-color: #bbbbbb;
+		border-width: thin;
+		background: #171717;
+		color: white;
+		padding: 10px;
+		transition: border-color 0.2s;
+	}
+	.input:focus {
+		transition: border-color 0.2s;
+		border-color: white;
+		outline: none;
+	}
 </style>

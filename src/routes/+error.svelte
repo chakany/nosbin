@@ -15,19 +15,18 @@
   - You should have received a copy of the GNU Affero General Public License
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-
 <script>
-    import { page } from '$app/stores';
-    import Button from "$lib/Button.svelte"
-    import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
-    import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+	import { page } from "$app/stores";
+	import Button from "$lib/Button.svelte";
+	import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
+	import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 </script>
 
 <div class="flex flex-col items-center gap-5">
-  <h1 class="text-5xl">Oops...</h1>
-  <span class="text-2xl">{$page.error.message}</span>
-  <Button>
-    <FontAwesomeIcon size="md" icon="{faArrowLeft}"></FontAwesomeIcon>
-    Go Back
-  </Button>
+	<h1 class="text-5xl">Oops...</h1>
+	<span class="text-2xl">{$page.error.message}</span>
+	<Button>
+		<FontAwesomeIcon size="md" icon={faArrowLeft} />
+		Go Back
+	</Button>
 </div>
