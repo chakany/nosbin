@@ -83,7 +83,7 @@
 			alt="Profile Picture"
 		/>
 		<div class="flex flex-col my-auto pl-3">
-			<span>{profile.display_name ?? profile.name ?? nip19.npubEncode(data.pubkey)}</span>
+			<span>{profile.display_name ?? profile.name ?? nip19.npubEncode(data.pubkey)} <small>{profile.display_name || profile.name ? nip19.npubEncode(data.pubkey) : ""}</small></span>
 			<span>
 				{profile.nip05 ?? ""}
 				{#if profile.nip05}
