@@ -225,7 +225,7 @@
 <footer class="mt-40">
 	<hr />
 	<div class="px-2 md:px-12 py-10">
-		<div class="grid grid-flow-col grid-rows-3 gap-4">
+		<div class="grid grid-flow-col grid-rows-1 gap-4">
 			<div class="col-start-1 flex gap-4">
 				<a class="my-auto" href="https://chaker.net" style="text-decoration: none"
 					><span class="chaker my-auto">Chaker</span></a
