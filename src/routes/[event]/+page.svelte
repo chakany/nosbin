@@ -19,6 +19,7 @@
 	import { nostr } from "$lib/store";
 	import { nip19 } from "nostr-tools/index";
 	import { Author } from "nostr-relaypool/index";
+	import Button from "$lib/Button.svelte";
 	import { page } from "$app/stores";
 	import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
 	import { faCheck, faX } from "@fortawesome/free-solid-svg-icons";
@@ -45,10 +46,24 @@
 		author.metaData((ev) => {
 			const parsed = JSON.parse(ev.content);
 			if (!parsed.name) return;
-			console.log(parsed);
 
 			profile = parsed;
 		}, 1000);
+	}
+
+	function download(data) {
+		if (browser) {
+			let element = document.createElement('a');
+			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data.content));
+			element.setAttribute('download', data.tags.find((t) => t[0] === "filename")[1]);
+
+			element.style.display = 'none';
+			document.body.appendChild(element);
+
+			element.click();
+
+			document.body.removeChild(element);
+		}
 	}
 </script>
 
@@ -75,7 +90,10 @@
 	If data doesn't load, try refreshing.
 {:then data}
 	{void getAuthor(data) || ""}
-	<h2 class="text-6xl">{data?.tags[0][1]}</h2>
+	<div class="flex">
+		<h2 class="my-auto text-6xl">{data?.tags.find((t) => t[0] === "filename")[1]}</h2>
+		<span class="my-auto ml-auto"><Button on:click={() => download(data)}>Download</Button></span>
+	</div>
 	<div class="flex mt-5">
 		<img
 			class="my-auto w-12 rounded"
@@ -102,7 +120,7 @@
 	</div>
 	<br />
 	Posted on: {new Date(data.created_at * 1000)}
-	{#if data?.tags[0][1].endsWith(".md")}
+	{#if data?.tags.find((t) => t[0] === "filename")[1].endsWith(".md")}
 		<SvelteMarkdown source={data.content} />
 	{:else}
 		<HighlightAuto code={data.content} let:highlighted>
