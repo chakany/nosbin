@@ -239,10 +239,9 @@
 					>Made with ❤️ by <a class="underline" href="https://jacany.com">Jack Chakany</a
 					></small
 				>
-				<small class="my-auto"
-					>npub1chakany8dcz93clv4xgcudcvhnfhdyqutprq2yh72daydevv8zasmuhf02
-					></small
-				>
+				<small class="my-auto">
+					npub1chakany8dcz93clv4xgcudcvhnfhdyqutprq2yh72daydevv8zasmuhf02
+				</small>
 				<small class="my-auto"
 					>This project is published under the <a
 						href="https://github.com/jacany/nosbin/blob/master/LICENSE"
