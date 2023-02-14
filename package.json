@@ -41,7 +41,7 @@
 		"@fontsource/righteous": "^4.5.7",
 		"@fortawesome/fontawesome-svg-core": "^6.2.1",
 		"@fortawesome/free-brands-svg-icons": "^6.2.1",
-		"@fortawesome/free-solid-svg-icons": "^6.2.1",
+		"@fortawesome/free-solid-svg-icons": "^6.3.0",
 		"@fortawesome/svelte-fontawesome": "^0.2.0",
 		"@sveltejs/adapter-vercel": "^2.0.2",
 		"nostr-relaypool": "^0.4.9",
