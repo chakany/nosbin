@@ -59,16 +59,16 @@ export default class Nostr {
 			this._privkey = "";
 		}
 
-		this.relays.onnotice((relayUrl, notice) => {
-			this._log.info(`NOTICE from ${relayUrl} `, notice)
+		this.relays.onnotice((url, msg) => {
+			this._log.info(`NOTICE from ${url} `, msg)
 		});
 
 		this.relays.ondisconnect((url, msg) => {
 			this._log.warn(`Disconnected from ${url}: `, msg)
 		})
 
-		this.relays.onerror((err, relayUrl) => {
-			this._log.error(`from ${relayUrl} `, err);
+		this.relays.onerror((url, msg) => {
+			this._log.error(`Error with ${url} `, msg);
 		});
 	}
 

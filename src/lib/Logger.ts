@@ -35,6 +35,6 @@ export default class Logger {
 	}
 
 	public error(...data) {
-		console.error(`[${this.name}]`, data);
+		console.error(`[${this.name}]`, ...data);
 	}
 }
