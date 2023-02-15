@@ -1,0 +1,76 @@
+Arguments: 
+  /Users/jackchakany/.nvm/versions/node/v18.13.0/bin/node /Users/jackchakany/.nvm/versions/node/v18.13.0/bin/yarn
+
+PATH: 
+  /usr/local/bin:/Users/jackchakany/.nvm/versions/node/v18.13.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/jackchakany/Projects/nosbin/node_modules/.bin:/Users/jackchakany/Library/Application Support/JetBrains/Toolbox/scripts
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  18.13.0
+
+Platform: 
+  darwin arm64
+
+Trace: 
+  Error: ENOENT: no such file or directory, copyfile '/Users/jackchakany/Library/Caches/Yarn/v6/npm-estraverse-4.3.0-398ad3f3c5a24948be7725e83d11a7de28cdbd1d-integrity/node_modules/estraverse/.jshintrc' -> '/Users/jackchakany/Projects/nosbin/node_modules/@typescript-eslint/utils/node_modules/estraverse/.jshintrc'
+
+npm manifest: 
+  {
+  	"name": "nosbin",
+  	"version": "0.3.0",
+  	"private": true,
+  	"license": "AGPL-3.0-or-later",
+  	"scripts": {
+  		"dev": "vite dev",
+  		"build": "vite build",
+  		"preview": "vite preview",
+  		"check": "svelte-kit sync && svelte-check --tsconfig tsconfig.json",
+  		"check:watch": "svelte-kit sync && svelte-check --tsconfig tsconfig.json --watch",
+  		"lint": "prettier --plugin-search-dir nosbin --check . && eslint .",
+  		"format": "prettier --plugin-search-dir nosbin --write ."
+  	},
+  	"devDependencies": {
+  		"@sveltejs/kit": "^1.5.2",
+  		"@typescript-eslint/eslint-plugin": "^5.45.0",
+  		"@typescript-eslint/parser": "^5.52.0",
+  		"autoprefixer": "^10.4.13",
+  		"eslint": "^8.34.0",
+  		"eslint-config-prettier": "^8.5.0",
+  		"eslint-plugin-svelte3": "^4.0.0",
+  		"postcss": "^8.4.21",
+  		"postcss-load-config": "^4.0.1",
+  		"prettier": "^2.8.0",
+  		"prettier-plugin-svelte": "^2.8.1",
+  		"prettier-plugin-tailwindcss": "^0.2.2",
+  		"svelte": "^3.54.0",
+  		"svelte-check": "^3.0.3",
+  		"svelte-highlight": "^7.1.2",
+  		"svelte-preprocess": "^5.0.1",
+  		"tailwindcss": "^3.2.6",
+  		"tslib": "^2.4.1",
+  		"typescript": "^4.9.3",
+  		"vite": "^4.1.1",
+  		"ws": "^8.12.0"
+  	},
+  	"type": "module",
+  	"dependencies": {
+  		"@fontsource/montserrat": "^4.5.14",
+  		"@fontsource/righteous": "^4.5.7",
+  		"@fortawesome/fontawesome-svg-core": "^6.3.0",
+  		"@fortawesome/free-brands-svg-icons": "^6.2.1",
+  		"@fortawesome/free-solid-svg-icons": "^6.3.0",
+  		"@fortawesome/svelte-fontawesome": "^0.2.0",
+  		"@sveltejs/adapter-vercel": "^2.0.2",
+  		"nostr-relaypool": "^0.4.9",
+  		"nostr-tools": "git+https://github.com/nbd-wtf/nostr-tools.git#cb05ee188f18e13f5c93b0c1ca40afb482e12b10",
+  		"svelte-markdown": "^0.2.3"
+  	}
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
