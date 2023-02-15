@@ -17,16 +17,24 @@
  */
 
 export default class Logger {
-	public name: string;
+	private readonly name: string;
 	constructor(name: string) {
 		this.name = name;
 	}
 
+	public info(...data) {
+		console.info(`[${this.name}]`, ...data)
+	}
+
 	public debug(...data) {
-		console.debug(`[${this.name}] `, data);
+		console.debug(`[${this.name}]`, ...data);
+	}
+
+	public warn(...data) {
+		console.warn(`[${this.name}]`, ...data)
 	}
 
 	public error(...data) {
-		console.error(`[${this.name}] `, data);
+		console.error(`[${this.name}]`, data);
 	}
 }

@@ -58,6 +58,18 @@ export default class Nostr {
 			this._pubkey = "";
 			this._privkey = "";
 		}
+
+		this.relays.onnotice((relayUrl, notice) => {
+			this._log.info(`NOTICE from ${relayUrl} `, notice)
+		});
+
+		this.relays.ondisconnect((url, msg) => {
+			this._log.warn(`Disconnected from ${url}: `, msg)
+		})
+
+		this.relays.onerror((err, relayUrl) => {
+			this._log.error(`from ${relayUrl} `, err);
+		});
 	}
 
 	public async nip05(nip05: string, pubkey: string): Promise<boolean> {
