@@ -40,6 +40,14 @@ export default class Nostr {
 			"wss://relay.nosbin.com",
 			"wss://eden.nostr.land",
 			"wss://relay.damus.io",
+			"wss://relay.snort.social",
+			"wss://relay.current.fyi",
+			"wss://nostr.oxtr.dev",
+			"wss://atlas.nostr.land",
+			"wss://nostr.zebedee.cloud",
+			"wss://relay.orangepill.dev",
+			"wss://nostr.fmt.wiz.biz",
+			"wss://nostr.wine"
 		]);
 		this._log = new Logger("nostr");
 		if (browser) {
