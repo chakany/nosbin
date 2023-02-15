@@ -100,6 +100,7 @@
 				{:else}
 					<FontAwesomeIcon class="my-auto" size="l" icon={faEyeSlash} />
 				{/if}
+				<small class="ml-5">Append <code>.md</code> to your filename to enter Markdown Mode!</small>
 			</div>
 		</div>
 		{#if previewMode}
