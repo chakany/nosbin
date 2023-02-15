@@ -39,11 +39,14 @@
 	import { onMount } from "svelte";
 	let inputtedPubkey = $nostr.pubkey;
 	let inputtedPrivkey = $nostr.privkey;
-	let account = new Author($nostr.relays, $nostr.getCurrentRelaysInArray(), $nostr._pubkey);
+	let account: Author | null
+	if ($nostr._pubkey) {
+		account = new Author($nostr.relays, $nostr.getCurrentRelaysInArray(), $nostr._pubkey);
+		account.metaData((event) => {
+			updateProfile(event);
+		}, 1000);
+	}
 	let profile = {};
-	account.metaData((event) => {
-		updateProfile(event);
-	}, 1000);
 	let countdown = 10;
 	setInterval(() => {
 		if (countdown > 0) countdown--;
