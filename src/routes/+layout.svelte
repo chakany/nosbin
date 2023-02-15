@@ -22,7 +22,6 @@
 	import { KeyModal, RelayModal } from "$lib/ModalController";
 	import { Author } from "nostr-relaypool/index";
 
-	export const ssr = false;
 	import "../app.postcss";
 	import "@fontsource/montserrat";
 	import "@fontsource/righteous";
