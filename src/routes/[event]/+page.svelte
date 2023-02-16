@@ -98,8 +98,10 @@
 </svelte:head>
 
 {#await event}
-	<h2>Fetching...</h2>
-	If data doesn't load, try refreshing.
+	<div class="flex flex-col gap-3 text-center mt-16">
+		<h1 class="text-6xl">Fetching...</h1>
+		If data doesn't load, try refreshing.
+	</div>
 {:then data}
 	{void getAuthor(data) || ""}
 	<div class="flex">
