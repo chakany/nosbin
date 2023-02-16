@@ -64,7 +64,6 @@
 	function updateProfile(event) {
 		let data = JSON.parse(event.content);
 		if (!data.name) return;
-		console.log(data.picture);
 
 		profile = data;
 	}
