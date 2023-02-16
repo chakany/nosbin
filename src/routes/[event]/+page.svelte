@@ -37,7 +37,19 @@
 		query.addEventListener("change", e => darkMode = e.matches);
 	}
 
-	const event = $nostr.getEventById($page.params.event, 1000);
+	let id = $page.params.event
+	let idData;
+	if ($page.params.event.startsWith("nevent")) {
+		idData = nip19.decode($page.params.event)
+		id = idData.data.id
+		if (idData.data.relays) {
+			idData.data.relays.forEach((relay) => {
+				$nostr.relays.addOrGetRelay(relay)
+			})
+		}
+	}
+
+	const event = $nostr.getEventById(id, 1000);
 	let author = null;
 	let profile = {};
 

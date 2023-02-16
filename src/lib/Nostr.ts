@@ -156,7 +156,7 @@ export default class Nostr {
 	//
 	// Event Management
 	//
-	public async postNewEvent(ev: Event): Promise<string | undefined> {
+	public async postNewEvent(ev: Event, returnNip19 = false): Promise<string | undefined> {
 		let event: Event = {
 			...ev,
 			pubkey: this._pubkey,
@@ -173,6 +173,9 @@ export default class Nostr {
 		}
 		await this.relays.publish(event, this.getCurrentRelaysInArray());
 
+		if (returnNip19) {
+			return nip19.neventEncode({ id: event.id!, relays: this.getCurrentRelaysInArray() })
+		}
 		return event.id;
 	}
 

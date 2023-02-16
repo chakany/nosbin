@@ -56,8 +56,7 @@
 			kind: 1050,
 			tags: [["filename", filename]],
 			content: content,
-		});
-		console.log(id);
+		}, true);
 		if (id) {
 			await goto(`/${id}`, { replaceState: false });
 		}
