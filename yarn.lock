@@ -1497,10 +1497,10 @@ normalize-range@^0.1.2:
   resolved "https://registry.yarnpkg.com/normalize-range/-/normalize-range-0.1.2.tgz#2d10c06bdfd312ea9777695a4d28439456b75942"
   integrity sha512-bdok/XvKII3nUpklnV6P2hxtMNrCboOjAcyBuQnWEhO665FwrSNRxU+AqpsyvO6LgGYPspN+lu5CLtw4jPRKNA==
 
-nostr-relaypool@^0.4.9:
-  version "0.4.13"
-  resolved "https://registry.yarnpkg.com/nostr-relaypool/-/nostr-relaypool-0.4.13.tgz#cf06e52bb1430235301c9b30d325afac200d4a54"
-  integrity sha512-cMelmJAR3tKKdXDFJIQq75IRyMS7Arm69hMekUAZkMc7wIOxGjYZXn8dWWmDpd77ZRmKfxIYKePc0eqc6OTjuw==
+nostr-relaypool@^0.4.17:
+  version "0.4.17"
+  resolved "https://registry.yarnpkg.com/nostr-relaypool/-/nostr-relaypool-0.4.17.tgz#e2b91f03bcea40322b3bcd91e6795c6c7d83b59f"
+  integrity sha512-w3ttz7ZVpSNDBe0Nw0UdJP0oO8eBDpaf0384OOj4xyWARTjnaznulvHhYedYurEPK39P1yrJCo/omNatE79mRQ==
   dependencies:
     isomorphic-ws "^5.0.0"
     nostr-tools "^1.1.0"
