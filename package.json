@@ -44,7 +44,7 @@
 		"@fortawesome/free-solid-svg-icons": "^6.3.0",
 		"@fortawesome/svelte-fontawesome": "^0.2.0",
 		"@sveltejs/adapter-vercel": "^2.0.2",
-		"nostr-relaypool": "^0.4.9",
+		"nostr-relaypool": "^0.5.3",
 		"nostr-tools": "git+https://github.com/nbd-wtf/nostr-tools.git#cb05ee188f18e13f5c93b0c1ca40afb482e12b10",
 		"svelte-markdown": "^0.2.3"
 	}

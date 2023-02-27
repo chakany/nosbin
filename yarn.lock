@@ -187,6 +187,15 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
+"@jest/source-map@^29.4.3":
+  version "29.4.3"
+  resolved "https://registry.yarnpkg.com/@jest/source-map/-/source-map-29.4.3.tgz#ff8d05cbfff875d4a791ab679b4333df47951d20"
+  integrity sha512-qyt/mb6rLyd9j1jUts4EQncvS6Yy3PM9HghnNv86QBlV+zdL2inCdK1tuVlL+J+lpiw2BI67qXOrX3UurBqQ1w==
+  dependencies:
+    "@jridgewell/trace-mapping" "^0.3.15"
+    callsites "^3.0.0"
+    graceful-fs "^4.2.9"
+
 "@jridgewell/resolve-uri@3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@jridgewell/resolve-uri/-/resolve-uri-3.1.0.tgz#2203b118c157721addfe69d47b70465463066d78"
@@ -197,7 +206,7 @@
   resolved "https://registry.yarnpkg.com/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.4.14.tgz#add4c98d341472a289190b424efbdb096991bb24"
   integrity sha512-XPSJHWmi394fuUuzDnGz1wiKqWfo1yXecHQMRf2l6hztTO+nPru658AyDngaBe7isIxEkRsPR3FZh+s7iVa4Uw==
 
-"@jridgewell/trace-mapping@^0.3.17":
+"@jridgewell/trace-mapping@^0.3.15", "@jridgewell/trace-mapping@^0.3.17":
   version "0.3.17"
   resolved "https://registry.yarnpkg.com/@jridgewell/trace-mapping/-/trace-mapping-0.3.17.tgz#793041277af9073b0951a7fe0f0d8c4c98c36985"
   integrity sha512-MCNzAp77qzKca9+W/+I0+sEpaUnZoeasnghNeVc41VZCEKaCH73Vq3BZZ/SzWIgrqE4H4ceI+p+b6C0mHf9T4g==
@@ -1497,11 +1506,12 @@ normalize-range@^0.1.2:
   resolved "https://registry.yarnpkg.com/normalize-range/-/normalize-range-0.1.2.tgz#2d10c06bdfd312ea9777695a4d28439456b75942"
   integrity sha512-bdok/XvKII3nUpklnV6P2hxtMNrCboOjAcyBuQnWEhO665FwrSNRxU+AqpsyvO6LgGYPspN+lu5CLtw4jPRKNA==
 
-nostr-relaypool@^0.4.9:
-  version "0.4.13"
-  resolved "https://registry.yarnpkg.com/nostr-relaypool/-/nostr-relaypool-0.4.13.tgz#cf06e52bb1430235301c9b30d325afac200d4a54"
-  integrity sha512-cMelmJAR3tKKdXDFJIQq75IRyMS7Arm69hMekUAZkMc7wIOxGjYZXn8dWWmDpd77ZRmKfxIYKePc0eqc6OTjuw==
+nostr-relaypool@^0.5.3:
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/nostr-relaypool/-/nostr-relaypool-0.5.3.tgz#88465623f665463ce63e1a5996441b69e279c0bc"
+  integrity sha512-1INGKleOTuUTFUs3RnnZrew4+G/idLUewh44WBtmTTJ9g+kRiQtMMaBGTVUpf9621nBNleEVOB8p3XSNcaX3FQ==
   dependencies:
+    "@jest/source-map" "^29.4.3"
     isomorphic-ws "^5.0.0"
     nostr-tools "^1.1.0"
     safe-stable-stringify "^2.4.2"
