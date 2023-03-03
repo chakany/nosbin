@@ -9,10 +9,11 @@ The decentralized pasting platform, built on nostr
 -   [x] Use own pubkey
     -   [x] bech32 support
     -   [x] nox2x support
--   [ ] Preview before posting
+-   [x] Posting to multiple Relays
+-   [X] Preview before posting
 -   [ ] Comments
 -   [ ] Reactions
 -   [ ] Profiles
 -   [ ] Search
--   [x] Posting to multiple Relays
--   [ ] Lightning Tips
+-   [ ] Zaps
+-   [ ] LN Pastes (Atomic Multipath Payments)
