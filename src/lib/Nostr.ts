@@ -22,9 +22,9 @@ import {
 	getEventHash,
 	signEvent,
 	nip19,
-} from "nostr-tools/index";
+} from "nostr-tools";
 import { browser } from "$app/environment";
-import type { Event } from "nostr-tools/index";
+import type { Event } from "nostr-tools";
 import Logger from "$lib/Logger";
 import { RelayPool } from "nostr-relaypool/index";
 

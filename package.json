@@ -13,7 +13,7 @@
 		"format": "prettier --plugin-search-dir nosbin --write ."
 	},
 	"devDependencies": {
-		"@sveltejs/kit": "^1.5.2",
+		"@sveltejs/kit": "^1.8.5",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.52.0",
 		"autoprefixer": "^10.4.13",
@@ -24,15 +24,15 @@
 		"postcss-load-config": "^4.0.1",
 		"prettier": "^2.8.0",
 		"prettier-plugin-svelte": "^2.8.1",
-		"prettier-plugin-tailwindcss": "^0.2.2",
+		"prettier-plugin-tailwindcss": "^0.2.3",
 		"svelte": "^3.54.0",
 		"svelte-check": "^3.0.3",
 		"svelte-highlight": "^7.1.2",
 		"svelte-preprocess": "^5.0.1",
-		"tailwindcss": "^3.2.6",
+		"tailwindcss": "^3.2.7",
 		"tslib": "^2.4.1",
 		"typescript": "^4.9.3",
-		"vite": "^4.1.1",
+		"vite": "^4.1.4",
 		"ws": "^8.12.0"
 	},
 	"type": "module",
@@ -44,8 +44,8 @@
 		"@fortawesome/free-solid-svg-icons": "^6.3.0",
 		"@fortawesome/svelte-fontawesome": "^0.2.0",
 		"@sveltejs/adapter-vercel": "^2.0.2",
-		"nostr-relaypool": "^0.4.9",
-		"nostr-tools": "git+https://github.com/nbd-wtf/nostr-tools.git#cb05ee188f18e13f5c93b0c1ca40afb482e12b10",
+		"nostr-relaypool": "^0.5.3",
+		"nostr-tools": "^1.7.4",
 		"svelte-markdown": "^0.2.3"
 	}
 }

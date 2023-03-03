@@ -17,7 +17,7 @@
   -->
 <script>
 	import { nostr } from "$lib/store";
-	import { nip19 } from "nostr-tools/index";
+	import { nip19 } from "nostr-tools";
 	import { Author } from "nostr-relaypool/index";
 	import Button from "$lib/Button.svelte";
 	import { page } from "$app/stores";
