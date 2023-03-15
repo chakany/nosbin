@@ -123,9 +123,9 @@
 <div class="mx-10 md:mx-20 my-7 flex">
 	<!--suppress JSUnresolvedVariable -->
 	<div class="my-auto">
-		<a class="text-xl md:text-2xl" style="text-decoration: none;" href="/">
-			<FontAwesomeIcon class="my-auto mr-1" size="2xl" icon={faNoteSticky} />
-			<span class="name my-auto" style>nosbin</span>
+		<a class="flex flex-col" style="text-decoration: none;" href="/">
+			<img class="dark:invert w-20 mx-auto" src="/logo.png" alt="nosbin logo" />
+			<span class="text-2xl mx-auto">nosbin</span>
 		</a>
 	</div>
 	<div class="ml-auto my-auto flex gap-8">
