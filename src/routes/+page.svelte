@@ -15,7 +15,7 @@
   - You should have received a copy of the GNU Affero General Public License
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-<script>
+<script lang="ts">
 	import Textbox from "$lib/Textbox.svelte";
 	import Button from "$lib/Button.svelte";
 	import { goto } from "$app/navigation";
@@ -28,6 +28,7 @@
 	import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 	import { KeyModal } from "$lib/ModalController";
 	import { browser } from "$app/environment";
+	import type { Snapshot } from './$types';
 
 	let darkMode = true;
 	if (browser) {
@@ -37,9 +38,14 @@
 		query.addEventListener("change", e => darkMode = e.matches);
 	}
 
-	let content;
-	let filename;
+	let content = "";
+	let filename = "";
 	let previewMode = false;
+
+	export const snapshot: Snapshot = {
+		capture: () => [filename, content],
+		restore: (value) => { filename = value[0]; content = value[1] }
+	}
 
 	async function post() {
 		if (!filename) {
