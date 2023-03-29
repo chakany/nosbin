@@ -48,7 +48,9 @@ export default class Nostr {
 			"wss://relay.orangepill.dev",
 			"wss://nostr.fmt.wiz.biz",
 			"wss://nostr.wine"
-		]);
+		], {
+			logSubscriptions: false
+		});
 		this._log = new Logger("nostr");
 		if (browser) {
 			const storedKeys = JSON.parse(localStorage.getItem("keys"));
@@ -181,5 +183,10 @@ export default class Nostr {
 
 	public getEventById(id: string, maxDelayms = 100): Promise<Event> {
 		return this.relays.getEventById(id, this.getCurrentRelaysInArray(), maxDelayms);
+	}
+
+	public sub(filters: any[], onEvent: (event: Event, isAfterEose: boolean, relayUrl: string | undefined) => void, maxDelayms = 100) {
+		// @ts-ignore
+		return this.relays.subscribe(filters, this.getCurrentRelaysInArray(), onEvent, maxDelayms, undefined)
 	}
 }

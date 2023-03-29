@@ -15,9 +15,9 @@
   - You should have received a copy of the GNU Affero General Public License
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-<script>
+<script lang="ts">
 	import { nostr } from "$lib/store";
-	import { nip19 } from "nostr-tools";
+	import { nip19, type Event } from "nostr-tools";
 	import { Author } from "nostr-relaypool/index";
 	import Button from "$lib/Button.svelte";
 	import { page } from "$app/stores";
@@ -28,6 +28,7 @@
 	import githubDark from "svelte-highlight/styles/github-dark";
 	import github from "svelte-highlight/styles/github";
 	import { browser } from "$app/environment";
+	import Reaction from "$lib/Reaction.svelte"
 
 	let darkMode = true;
 	if (browser) {
@@ -76,6 +77,34 @@
 
 			document.body.removeChild(element);
 		}
+	}
+
+	let reactions: Event[] = [];
+
+	let unsubFromReactions = $nostr.sub(
+		[
+			{
+				kinds: [7],
+				"#e": [id]
+			}
+		],
+		(event) => {
+			reactions = [...reactions, event];
+			console.log(reactions)
+		},
+	)
+	function postReaction(reaction: string): string {
+		if (reactions.find((v: Event) => v.pubkey === $nostr._pubkey)) {
+			return "";
+		}
+		const event = {
+			kind: 7,
+			tags: [
+					["e", id]
+			],
+			content: reaction,
+		}
+		return $nostr.postNewEvent(event)
 	}
 </script>
 
@@ -141,6 +170,14 @@
 			<LineNumbers {highlighted} hideBorder wrapLines />
 		</HighlightAuto>
 	{/if}
+	<div class="flex mt-5">
+		<span on:click={() => postReaction("+")} class="mr-2 my-auto">
+			<Reaction pubkey={$nostr._pubkey} events={reactions.filter((r) => r.content === "+" || r.content === "👍" || r.content === "❤️" || r.content === "🤙")} emoji="👍" />
+		</span>
+		<span on:click={() => postReaction("-")} class="mr-2 my-auto">
+			<Reaction pubkey={$nostr._pubkey} events={reactions.filter((r) => r.content === "-" || r.content === "👎" || r.content === "💔️")} emoji="👎" />
+		</span>
+	</div>
 {:catch error}
 	<span>error</span>
 {/await}
