@@ -300,10 +300,10 @@
     "@noble/hashes" "~1.2.0"
     "@scure/base" "~1.1.0"
 
-"@sveltejs/adapter-vercel@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@sveltejs/adapter-vercel/-/adapter-vercel-2.0.2.tgz#8246b7946d8eac47a4e6b65f0ae278aef0a530b7"
-  integrity sha512-Mn80jy3rPNWB9iBp93MHXWwOh1qyxNzMNal0Dd80rD3As5Qi5L3lGhr1cIZ3T3Y3giwAVxzjMiHEflaUb8sjqg==
+"@sveltejs/adapter-vercel@^2.4.2":
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/@sveltejs/adapter-vercel/-/adapter-vercel-2.4.2.tgz#97bd4a8299d79bc5d4456f1a90841b09e8e06765"
+  integrity sha512-HxItPKrt9DmSbKw2X4XVRYa4J2ueTEfQr79ijDcI/ZUtQ64d4X3ilUnLpmm1nXMBb1DyxaWJF4o8avwiV4O2Hw==
   dependencies:
     "@vercel/nft" "^0.22.1"
     esbuild "^0.16.3"
