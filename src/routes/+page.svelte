@@ -74,6 +74,7 @@
 	<meta property="og:title" content="Home - nosbin" />
 	<meta name="description" content="the decentralized pasting platform, built on nostr" />
 	<meta property="og:description" content="the decentralized pasting platform, built on nostr" />
+	<meta property="og:image" content="/static/logo.png" />
 	{#if darkMode}
 		{@html githubDark}
 	{:else}
