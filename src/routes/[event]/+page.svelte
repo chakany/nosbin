@@ -109,7 +109,7 @@
 </script>
 
 <svelte:head>
-	<title>paste {$page.params.event} - nosbin</title>
+	<title>paste {$page.params.event}</title>
 	<meta
 		name="description"
 		content="view this paste on nosbin, the decentralized pasting platform"

@@ -70,8 +70,8 @@
 </script>
 
 <svelte:head>
-	<title>Home - nosbin</title>
-	<meta property="og:title" content="Home - nosbin" />
+	<title>nosbin</title>
+	<meta property="og:title" content="nosbin" />
 	<meta name="description" content="the decentralized pasting platform, built on nostr" />
 	<meta property="og:description" content="the decentralized pasting platform, built on nostr" />
 	{#if darkMode}
