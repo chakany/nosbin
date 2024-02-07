@@ -106,6 +106,10 @@
 		}
 		return $nostr.postNewEvent(event)
 	}
+
+	function escapeText(text: string): string {
+		return value.toString().replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&#39;").replace(/"/g, "&#34;");
+	}
 </script>
 
 <svelte:head>
@@ -166,7 +170,7 @@
 	{#if data?.tags.find((t) => t[0] === "filename")[1].endsWith(".md")}
 		<SvelteMarkdown source={data.content} />
 	{:else}
-		<HighlightAuto code={data.content} let:highlighted>
+		<HighlightAuto code={(() => escapeText(data.content))()} let:highlighted>
 			<LineNumbers {highlighted} hideBorder wrapLines />
 		</HighlightAuto>
 	{/if}
